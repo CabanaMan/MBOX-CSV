@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>MBOX → CSV | Upload up to 20 GB</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Upload an .mbox (or .pst if enabled) up to 20 GB. Server-side conversion. Download a ZIP with emails.csv. Privacy-first.">
+  <style>
+    :root{
+      --bg:#0b1020; --panel:#0f172a; --muted:#9aa4b2; --text:#e6e9ef;
+      --brand1:#7c5cff; --brand2:#5b85ff; --ring:#334155; --ring2:#1f2937;
+      --ok:#22c55e;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;background:
+      radial-gradient(1200px 800px at 75% -10%,#2a3458 0%,transparent 60%),
+      radial-gradient(1000px 600px at -20% 40%,#1a2040 0%,transparent 55%),
+      var(--bg);
+      color:var(--text); font-family: Inter,system-ui,Segoe UI,Roboto,Arial;
+    }
+    .container{max-width:960px;margin:0 auto;padding:24px}
+    h1{margin:6px 0 4px; font-size:34px; letter-spacing:.3px}
+    .sub{color:var(--muted)}
+    .panel{
+      margin-top:18px; background:linear-gradient(180deg,#0d1428 0%,#0c1326 100%);
+      border:1px solid var(--ring2); border-radius:18px; padding:24px;
+      box-shadow:0 18px 60px #0007;
+    }
+    .drop{
+      border:1.5px dashed var(--ring); border-radius:16px; padding:38px;
+      text-align:center; cursor:pointer; transition:.15s; background:#0b1224;
+    }
+    .drop:hover{ border-color:#55627a }
+    .drop.drag{ background:#0e1a34; border-color:var(--brand1) }
+    .btn{
+      display:inline-flex; align-items:center; gap:10px; padding:12px 16px;
+      border:0; border-radius:12px; font-weight:700; cursor:pointer;
+      background:linear-gradient(90deg,var(--brand1),var(--brand2)); color:#0b0f1e;
+      margin-top:16px;
+    }
+    .btn[disabled]{ opacity:.6; cursor:not-allowed }
+    .bar{height:12px; border-radius:999px; background:#0b1b2f;
+         border:1px solid var(--ring2); overflow:hidden;}
+    .fill{height:100%; width:0; background:linear-gradient(90deg,var(--ok),var(--brand1))}
+    .row{display:flex; align-items:center; gap:12px; margin-top:14px}
+    .pct{min-width:48px; text-align:right; color:var(--muted)}
+    .status{min-height:24px; margin-top:10px; color:#cdd6e3}
+    .note{color:var(--muted); font-size:13px; margin-top:10px}
+    .footer{margin-top:26px; color:#7c8799; font-size:12px; text-align:center}
+    code{background:#111a2e; padding:2px 6px; border-radius:6px; border:1px solid #1e293b}
+    a{color:#9ecbff; text-decoration:none}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>MBOX → CSV</h1>
+    <div class="sub">Upload up to 20 GB. Server-side conversion. Download a ZIP with <b>emails.csv</b>.</div>
+
+    <div class="panel">
+      <div id="drop" class="drop" role="button" aria-label="Upload area">
+        <div style="font-size:18px;margin-bottom:6px">Drag & drop your <b>.mbox</b> here</div>
+        <div class="hint" style="color:var(--muted)">or click to choose a file</div>
+        <input id="file" type="file" accept=".mbox" hidden>
+      </div>
+
+      <button id="go" class="btn" disabled>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l9 4-9 4-9-4 9-4Zm0 7l9 4-9 4-9-4 9-4Zm0 7l9 4-9 4-9-4 9-4Z"/></svg>
+        Upload & Convert
+      </button>
+
+      <div class="row" aria-label="Progress">
+        <div class="bar" style="flex:1"><div id="fill" class="fill"></div></div>
+        <div id="pct" class="pct">0%</div>
+      </div>
+
+      <div id="status" class="status">Idle.</div>
+      <div class="note">Tip: You can leave this tab open while we parse your archive. When ready, download starts automatically.</div>
+      <a id="dl" href="#" download="emails.zip" style="display:none"></a>
+    </div>
+
+    <div class="footer">mbox-csv.com • Privacy-first • No data retained after conversion</div>
+  </div>
+
+<script>
+const $=s=>document.querySelector(s);
+const drop=$("#drop"), file=$("#file"), go=$("#go"),
+      fill=$("#fill"), pct=$("#pct"), st=$("#status"), dl=$("#dl");
+let selected=null, job=null, poll=null;
+
+function setPct(v){ fill.style.width=v+"%"; pct.textContent=Math.floor(v)+"%"; }
+function setSt(t){ st.textContent=t; }
+
+drop.addEventListener("click",()=>file.click());
+["dragover","dragenter"].forEach(evn=>drop.addEventListener(evn,e=>{
+  e.preventDefault(); drop.classList.add("drag");
+}));
+["dragleave","drop"].forEach(evn=>drop.addEventListener(evn,()=>{
+  drop.classList.remove("drag");
+}));
+drop.addEventListener("drop",e=>{
+  e.preventDefault();
+  if(!e.dataTransfer.files.length) return;
+  selected=e.dataTransfer.files[0];
+  drop.querySelector(".hint").innerHTML=`<b>Selected:</b> ${selected.name}`;
+  go.disabled=false; setPct(0); setSt("Ready.");
+});
+file.addEventListener("change",e=>{
+  if(!e.target.files.length) return;
+  selected=e.target.files[0];
+  drop.querySelector(".hint").innerHTML=`<b>Selected:</b> ${selected.name}`;
+  go.disabled=false; setPct(0); setSt("Ready.");
+});
+
+go.addEventListener("click",()=>{
+  if(!selected) return;
+  go.disabled=true; dl.style.display="none"; setSt("Uploading…");
+  const fd=new FormData(); fd.append("file",selected);
+  const xhr=new XMLHttpRequest();
+  xhr.open("POST","/upload"); xhr.responseType="json";
+  xhr.upload.onprogress=e=>{ if(e.lengthComputable) setPct(e.loaded/e.total*100); };
+  xhr.onerror=()=>{ setSt("Network error."); go.disabled=false; };
+  xhr.onload=()=>{
+    if(xhr.status!==200){ setSt("Error "+xhr.status); go.disabled=false; return; }
+    job=xhr.response.job_id; setPct(100); setSt("Parsing…");
+    poll=setInterval(async ()=>{
+      const r=await fetch("/status/"+job).then(r=>r.json());
+      if(r.status==="processing"){ setSt(`Parsing… ${(r.processed||0).toLocaleString()} messages`); }
+      else if(r.status==="done"){
+        clearInterval(poll);
+        dl.href="/download/"+job; dl.style.display="inline"; dl.click();
+        setSt("Done."); go.disabled=false;
+      } else if(r.status==="error"){
+        clearInterval(poll);
+        setSt("Error: "+(r.error||"unknown")); go.disabled=false;
+      }
+    },1500);
+  };
+  xhr.send(fd);
+});
+</script>
+</body>
+</html>

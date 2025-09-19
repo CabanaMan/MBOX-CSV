@@ -1,0 +1,12 @@
+services:
+  app:
+    image: python:3.11-slim
+    working_dir: /app
+    command: bash -lc "pip install --no-cache-dir fastapi uvicorn[standard] python-multipart && uvicorn main:app --host 0.0.0.0 --port 8000"
+    volumes:
+      - ./app:/app
+      - ./data:/data
+      - ./downloads:/downloads
+    ports:
+      - "127.0.0.1:8000:8000"
+    restart: unless-stopped
