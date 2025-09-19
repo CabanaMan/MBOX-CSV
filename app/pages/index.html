@@ -2,142 +2,325 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>MBOX → CSV | Upload up to 20 GB</title>
+  <title>MBOX → CSV Email Converter | Free 20 GB Uploads</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Upload an .mbox (or .pst if enabled) up to 20 GB. Server-side conversion. Download a ZIP with emails.csv. Privacy-first.">
+  <meta name="description" content="Convert large MBOX email archives to CSV spreadsheets in minutes. Upload up to 20 GB, let our server parse the messages, and download a privacy-first ZIP export.">
+  <meta name="keywords" content="mbox to csv, email converter, export gmail mbox, pst to csv alternative, email archive to spreadsheet">
+  <link rel="canonical" href="https://mbox-csv.com/">
+  <meta name="robots" content="index,follow">
+  <meta name="author" content="MBOX-CSV">
+  <meta name="theme-color" content="#0b1020">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="MBOX → CSV Email Converter">
+  <meta property="og:description" content="Fast, secure, and free MBOX to CSV conversion with uploads up to 20 GB.">
+  <meta property="og:url" content="https://mbox-csv.com/">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="MBOX → CSV Email Converter">
+  <meta name="twitter:description" content="Convert large MBOX archives to CSV spreadsheets with server-side parsing.">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "SoftwareApplication",
+        "name": "MBOX → CSV Email Converter",
+        "applicationCategory": "UtilityApplication",
+        "operatingSystem": "Web",
+        "description": "Convert MBOX email archives to CSV securely online. Upload up to 20 GB, parse messages server-side, and download a ZIP export.",
+        "url": "https://mbox-csv.com/",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        }
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Can I convert very large MBOX files?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes. The converter accepts archives up to 20 GB and streams them directly on the server for reliable processing."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What data is included in the CSV export?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Each row in emails.csv contains the message date, sender, recipients, subject, and the Message-ID header for easy spreadsheet analysis."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Do you retain my uploaded emails?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. Files are processed in a private job directory and removed automatically after conversion completes."
+            }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
   <style>
     :root{
-      --bg:#0b1020; --panel:#0f172a; --muted:#9aa4b2; --text:#e6e9ef;
-      --brand1:#7c5cff; --brand2:#5b85ff; --ring:#334155; --ring2:#1f2937;
-      --ok:#22c55e;
+      --bg:#0b1020;--panel:#0f172a;--muted:#9aa4b2;--text:#e6e9ef;--brand:#7c5cff;--brand2:#22c55e;
+      --ring:#334155;--ring2:#1f2937;--ok:#22c55e;--err:#ef4444;
     }
     *{box-sizing:border-box}
     html,body{height:100%}
     body{margin:0;background:
       radial-gradient(1200px 800px at 75% -10%,#2a3458 0%,transparent 60%),
-      radial-gradient(1000px 600px at -20% 40%,#1a2040 0%,transparent 55%),
-      var(--bg);
-      color:var(--text); font-family: Inter,system-ui,Segoe UI,Roboto,Arial;
+      radial-gradient(1000px 600px at -20% 40%,#1a2040 0%,transparent 55%),var(--bg);
+      color:var(--text);font-family:Inter,system-ui,Segoe UI,Roboto,Arial;line-height:1.6;
     }
-    .container{max-width:960px;margin:0 auto;padding:24px}
-    h1{margin:6px 0 4px; font-size:34px; letter-spacing:.3px}
-    .sub{color:var(--muted)}
-    .panel{
-      margin-top:18px; background:linear-gradient(180deg,#0d1428 0%,#0c1326 100%);
-      border:1px solid var(--ring2); border-radius:18px; padding:24px;
-      box-shadow:0 18px 60px #0007;
+    .page{min-height:100%;display:flex;flex-direction:column}
+    .container{max-width:960px;margin:0 auto;padding:28px 24px}
+    .hero{padding-top:28px;padding-bottom:12px}
+    .hero .badge{width:16px;height:16px;border-radius:50%;background:conic-gradient(from 0deg,#7c5cff,#22c55e);box-shadow:0 0 22px #7c5cff88}
+    .hero h1{margin:0;font-size:32px;letter-spacing:.3px}
+    .hero .tagline{margin-top:8px;color:var(--muted);max-width:600px}
+    .panel{background:linear-gradient(180deg,#0d1428 0%,#0c1326 100%);border:1px solid var(--ring2);border-radius:18px;padding:28px;box-shadow:0 20px 60px #0007}
+    .panel h2{margin:0 0 12px;font-size:24px}
+    .drop{border:1.5px dashed var(--ring);border-radius:16px;padding:42px;text-align:center;cursor:pointer;transition:.15s;background:#0b1224}
+    .drop:hover{border-color:#55627a}
+    .drop.drag{background:#0e1a34;border-color:#7c5cff}
+    .drop .hint{color:var(--muted)}
+    .controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:20px}
+    .btn{display:inline-flex;align-items:center;gap:10px;padding:12px 18px;border:0;border-radius:12px;font-weight:600;cursor:pointer}
+    .btn-primary{background:linear-gradient(90deg,#7c5cff,#5b85ff);color:#0b0f1e}
+    .btn[disabled]{opacity:.6;cursor:not-allowed}
+    .progress{display:flex;align-items:center;gap:12px;margin-top:18px}
+    .bar{flex:1;height:12px;border-radius:999px;background:#0b1b2f;border:1px solid var(--ring2);overflow:hidden}
+    .fill{height:100%;width:0;background:linear-gradient(90deg,#22c55e,#7c5cff)}
+    .pct{min-width:48px;text-align:right;color:var(--muted)}
+    .status{min-height:24px;margin-top:10px;color:#cdd6e3}
+    .note{margin-top:16px;color:var(--muted);font-size:14px}
+    .main{flex:1;display:flex;flex-direction:column;gap:36px;padding-bottom:20px}
+    .seo-section{background:rgba(10,16,34,.65);border:1px solid #111c32;border-radius:18px;padding:28px}
+    .seo-section h2{margin-top:0;font-size:22px}
+    .seo-section p{margin:8px 0;color:#cdd6e3}
+    .list-check{list-style:none;padding:0;margin:16px 0 0;display:grid;gap:12px}
+    .list-check li{position:relative;padding-left:28px}
+    .list-check li::before{content:"✓";position:absolute;left:0;top:0;color:var(--brand2);font-weight:700}
+    .seo-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin-top:18px}
+    .seo-grid article{background:#0b1224;border:1px solid #132035;border-radius:14px;padding:18px;color:#d4d9e4}
+    .seo-grid h3{margin:0 0 8px;font-size:18px}
+    .faq details{background:#0b1224;border:1px solid #132035;border-radius:14px;margin-top:12px;padding:16px}
+    .faq summary{font-weight:600;cursor:pointer;color:#e6e9ef}
+    .faq p{margin:12px 0 0;color:#cdd6e3}
+    .ad-wrapper{margin:16px auto;width:100%;max-width:960px;padding:0 24px}
+    .ad-slot{display:block;width:100%;min-height:90px;border-radius:16px;border:1.5px dashed var(--ring);background:#0b1224;position:relative}
+    .ad-slot--placeholder::after{content:"Advertisement placeholder";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:14px;color:var(--muted);letter-spacing:.3px}
+    .ad-wrapper .ad-note{margin-top:8px;font-size:12px;color:var(--muted);text-align:center}
+    .ad-wrapper.ad-active .ad-note{display:none}
+    .footer{margin:32px auto 28px;color:#7c8799;font-size:12px;text-align:center;padding:0 24px}
+    a.dl{display:none;color:#22c55e;text-decoration:none;font-weight:600}
+    kbd{background:#111a2e;padding:2px 6px;border-radius:6px;border:1px solid #1e293b}
+    @media (max-width:720px){
+      .hero h1{font-size:28px}
+      .panel{padding:24px}
+      .drop{padding:32px}
+      .seo-section{padding:24px}
     }
-    .drop{
-      border:1.5px dashed var(--ring); border-radius:16px; padding:38px;
-      text-align:center; cursor:pointer; transition:.15s; background:#0b1224;
-    }
-    .drop:hover{ border-color:#55627a }
-    .drop.drag{ background:#0e1a34; border-color:var(--brand1) }
-    .btn{
-      display:inline-flex; align-items:center; gap:10px; padding:12px 16px;
-      border:0; border-radius:12px; font-weight:700; cursor:pointer;
-      background:linear-gradient(90deg,var(--brand1),var(--brand2)); color:#0b0f1e;
-      margin-top:16px;
-    }
-    .btn[disabled]{ opacity:.6; cursor:not-allowed }
-    .bar{height:12px; border-radius:999px; background:#0b1b2f;
-         border:1px solid var(--ring2); overflow:hidden;}
-    .fill{height:100%; width:0; background:linear-gradient(90deg,var(--ok),var(--brand1))}
-    .row{display:flex; align-items:center; gap:12px; margin-top:14px}
-    .pct{min-width:48px; text-align:right; color:var(--muted)}
-    .status{min-height:24px; margin-top:10px; color:#cdd6e3}
-    .note{color:var(--muted); font-size:13px; margin-top:10px}
-    .footer{margin-top:26px; color:#7c8799; font-size:12px; text-align:center}
-    code{background:#111a2e; padding:2px 6px; border-radius:6px; border:1px solid #1e293b}
-    a{color:#9ecbff; text-decoration:none}
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>MBOX → CSV</h1>
-    <div class="sub">Upload up to 20 GB. Server-side conversion. Download a ZIP with <b>emails.csv</b>.</div>
-
-    <div class="panel">
-      <div id="drop" class="drop" role="button" aria-label="Upload area">
-        <div style="font-size:18px;margin-bottom:6px">Drag & drop your <b>.mbox</b> here</div>
-        <div class="hint" style="color:var(--muted)">or click to choose a file</div>
-        <input id="file" type="file" accept=".mbox" hidden>
+  <div class="page">
+    <header class="hero">
+      <div class="container">
+        <div style="display:flex;align-items:center;gap:14px">
+          <div class="badge" aria-hidden="true"></div>
+          <div>
+            <h1>MBOX → CSV Email Converter</h1>
+            <p class="tagline">Upload up to 20 GB per file, convert everything on secure servers, and receive a clean <b>emails.csv</b> download ready for analysis.</p>
+          </div>
+        </div>
       </div>
+    </header>
 
-      <button id="go" class="btn" disabled>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l9 4-9 4-9-4 9-4Zm0 7l9 4-9 4-9-4 9-4Zm0 7l9 4-9 4-9-4 9-4Z"/></svg>
-        Upload & Convert
-      </button>
-
-      <div class="row" aria-label="Progress">
-        <div class="bar" style="flex:1"><div id="fill" class="fill"></div></div>
-        <div id="pct" class="pct">0%</div>
-      </div>
-
-      <div id="status" class="status">Idle.</div>
-      <div class="note">Tip: You can leave this tab open while we parse your archive. When ready, download starts automatically.</div>
-      <a id="dl" href="#" download="emails.zip" style="display:none"></a>
+    <div class="ad-wrapper" aria-label="Top advertisement slot">
+      <ins class="adsbygoogle ad-slot ad-slot--placeholder" data-ad-slot="REPLACE_WITH_SLOT_ID" data-ad-format="auto" data-full-width-responsive="true"></ins>
+      <p class="ad-note">Set <code>window.ADSENSE_CLIENT_ID</code> and replace the slot ID to serve ads here.</p>
     </div>
 
-    <div class="footer">mbox-csv.com • Privacy-first • No data retained after conversion</div>
+    <main class="main">
+      <div class="container">
+        <section class="panel" aria-label="MBOX to CSV conversion form">
+          <h2>Convert your archive</h2>
+          <div id="drop" class="drop" role="button" aria-label="Upload area">
+            <div style="font-size:18px;margin-bottom:6px">Drag &amp; drop your <b>.mbox</b> here</div>
+            <div class="hint">or click to choose a file from your device</div>
+            <input id="file" type="file" accept=".mbox" hidden>
+          </div>
+
+          <div class="controls">
+            <button id="go" class="btn btn-primary" disabled>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l9 4-9 4-9-4 9-4Zm0 7l9 4-9 4-9-4 9-4Zm0 7l9 4-9 4-9-4 9-4Z"/></svg>
+              Upload &amp; Convert
+            </button>
+            <a id="dl" class="dl">Download ZIP</a>
+          </div>
+
+          <div class="progress" aria-label="Progress">
+            <div class="bar"><div id="fill" class="fill"></div></div>
+            <div id="pct" class="pct">0%</div>
+          </div>
+
+          <div id="status" class="status" role="status" aria-live="polite">Idle.</div>
+          <p class="note">Tip: Leave this tab open while we parse your archive. The <b>emails.zip</b> download starts automatically when ready.</p>
+        </section>
+
+        <section class="seo-section" id="features">
+          <h2>Why choose this MBOX to CSV converter?</h2>
+          <ul class="list-check">
+            <li>Handles archives up to 20 GB without browser timeouts or memory errors.</li>
+            <li>Server-side parsing keeps the heavy lifting off your device while protecting your data.</li>
+            <li>Produces a clean CSV with the most important email headers for spreadsheets, BI tools, and CRMs.</li>
+            <li>Privacy-first processing — temporary files are automatically deleted after each job finishes.</li>
+          </ul>
+        </section>
+
+        <section class="seo-section" id="how-it-works">
+          <h2>How to convert an MBOX file to CSV</h2>
+          <div class="seo-grid">
+            <article>
+              <h3>1. Upload your archive</h3>
+              <p>Select or drop the MBOX export from Gmail, Thunderbird, Apple Mail, or any other client.</p>
+            </article>
+            <article>
+              <h3>2. Let the server parse it</h3>
+              <p>We read each message on secure infrastructure, keeping track of progress so you always know what is happening.</p>
+            </article>
+            <article>
+              <h3>3. Download <code>emails.csv</code></h3>
+              <p>Receive a ZIP containing the CSV file with columns for Date, From, To, Cc, Bcc, Subject, and Message-ID.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="seo-section" id="faq">
+          <h2>Frequently asked questions</h2>
+          <div class="faq">
+            <details>
+              <summary>Can I convert MBOX files created by Google Takeout?</summary>
+              <p>Yes. Google Takeout exports Gmail mailboxes as standard MBOX archives that work perfectly with this converter.</p>
+            </details>
+            <details>
+              <summary>Is there a limit to how many times I can use the tool?</summary>
+              <p>You can submit multiple jobs. Each upload can be up to 20 GB, and you can start another conversion as soon as the previous one finishes.</p>
+            </details>
+            <details>
+              <summary>What if I need PST or EML support?</summary>
+              <p>The CSV output focuses on core headers today. Contact us if you need PST ingestion or body text exports — we are iterating quickly based on feedback.</p>
+            </details>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <div class="ad-wrapper" aria-label="Bottom advertisement slot">
+      <ins class="adsbygoogle ad-slot ad-slot--placeholder" data-ad-slot="REPLACE_WITH_SLOT_ID" data-ad-format="auto" data-full-width-responsive="true"></ins>
+      <p class="ad-note">Add your production ad slot ID to show monetized creatives in this section.</p>
+    </div>
+
+    <footer class="footer">mbox-csv.com • Privacy-first • No data retained after conversion</footer>
   </div>
 
-<script>
-const $=s=>document.querySelector(s);
-const drop=$("#drop"), file=$("#file"), go=$("#go"),
-      fill=$("#fill"), pct=$("#pct"), st=$("#status"), dl=$("#dl");
-let selected=null, job=null, poll=null;
+  <script>
+    const $=s=>document.querySelector(s);
+    const drop=$("#drop"), file=$("#file"), go=$("#go"), fill=$("#fill"), pct=$("#pct"), st=$("#status"), dl=$("#dl");
+    let selected=null, job=null, poll=null;
 
-function setPct(v){ fill.style.width=v+"%"; pct.textContent=Math.floor(v)+"%"; }
-function setSt(t){ st.textContent=t; }
+    function setPct(v){ fill.style.width=v+"%"; pct.textContent=Math.floor(v)+"%"; }
+    function setSt(t){ st.textContent=t; }
 
-drop.addEventListener("click",()=>file.click());
-["dragover","dragenter"].forEach(evn=>drop.addEventListener(evn,e=>{
-  e.preventDefault(); drop.classList.add("drag");
-}));
-["dragleave","drop"].forEach(evn=>drop.addEventListener(evn,()=>{
-  drop.classList.remove("drag");
-}));
-drop.addEventListener("drop",e=>{
-  e.preventDefault();
-  if(!e.dataTransfer.files.length) return;
-  selected=e.dataTransfer.files[0];
-  drop.querySelector(".hint").innerHTML=`<b>Selected:</b> ${selected.name}`;
-  go.disabled=false; setPct(0); setSt("Ready.");
-});
-file.addEventListener("change",e=>{
-  if(!e.target.files.length) return;
-  selected=e.target.files[0];
-  drop.querySelector(".hint").innerHTML=`<b>Selected:</b> ${selected.name}`;
-  go.disabled=false; setPct(0); setSt("Ready.");
-});
+    drop.addEventListener("click",()=>file.click());
+    ["dragover","dragenter"].forEach(evn=>drop.addEventListener(evn,e=>{
+      e.preventDefault(); drop.classList.add("drag");
+    }));
+    ["dragleave","drop"].forEach(evn=>drop.addEventListener(evn,()=>{
+      drop.classList.remove("drag");
+    }));
+    drop.addEventListener("drop",e=>{
+      e.preventDefault();
+      if(!e.dataTransfer.files.length) return;
+      selected=e.dataTransfer.files[0];
+      drop.querySelector(".hint").innerHTML=`<b>Selected:</b> ${selected.name}`;
+      go.disabled=false; setPct(0); setSt("Ready.");
+    });
+    file.addEventListener("change",e=>{
+      if(!e.target.files.length) return;
+      selected=e.target.files[0];
+      drop.querySelector(".hint").innerHTML=`<b>Selected:</b> ${selected.name}`;
+      go.disabled=false; setPct(0); setSt("Ready.");
+    });
 
-go.addEventListener("click",()=>{
-  if(!selected) return;
-  go.disabled=true; dl.style.display="none"; setSt("Uploading…");
-  const fd=new FormData(); fd.append("file",selected);
-  const xhr=new XMLHttpRequest();
-  xhr.open("POST","/upload"); xhr.responseType="json";
-  xhr.upload.onprogress=e=>{ if(e.lengthComputable) setPct(e.loaded/e.total*100); };
-  xhr.onerror=()=>{ setSt("Network error."); go.disabled=false; };
-  xhr.onload=()=>{
-    if(xhr.status!==200){ setSt("Error "+xhr.status); go.disabled=false; return; }
-    job=xhr.response.job_id; setPct(100); setSt("Parsing…");
-    poll=setInterval(async ()=>{
-      const r=await fetch("/status/"+job).then(r=>r.json());
-      if(r.status==="processing"){ setSt(`Parsing… ${(r.processed||0).toLocaleString()} messages`); }
-      else if(r.status==="done"){
-        clearInterval(poll);
-        dl.href="/download/"+job; dl.style.display="inline"; dl.click();
-        setSt("Done."); go.disabled=false;
-      } else if(r.status==="error"){
-        clearInterval(poll);
-        setSt("Error: "+(r.error||"unknown")); go.disabled=false;
+    go.addEventListener("click",()=>{
+      if(!selected) return;
+      go.disabled=true; dl.style.display="none"; setSt("Uploading…");
+      const fd=new FormData(); fd.append("file",selected);
+      const xhr=new XMLHttpRequest();
+      xhr.open("POST","/upload"); xhr.responseType="json";
+      xhr.upload.onprogress=e=>{ if(e.lengthComputable) setPct(e.loaded/e.total*100); };
+      xhr.onerror=()=>{ setSt("Network error."); go.disabled=false; };
+      xhr.onload=()=>{
+        if(xhr.status!==200){ setSt("Error "+xhr.status); go.disabled=false; return; }
+        job=xhr.response.job_id; setPct(100); setSt("Parsing…");
+        poll=setInterval(async ()=>{
+          const r=await fetch("/status/"+job).then(r=>r.json());
+          if(r.status==="processing"){ setSt(`Parsing… ${(r.processed||0).toLocaleString()} messages`); }
+          else if(r.status==="done"){
+            clearInterval(poll);
+            dl.href="/download/"+job; dl.download="emails.zip"; dl.style.display="inline";
+            dl.click(); setSt("Done."); go.disabled=false;
+          } else if(r.status==="error"){
+            clearInterval(poll); setSt("Error: "+(r.error||"unknown")); go.disabled=false;
+          }
+        },1500);
+      };
+      xhr.send(fd);
+    });
+  </script>
+  <script>
+    (function(){
+      const ADS_CLIENT_ID = (window.ADSENSE_CLIENT_ID || "ca-pub-XXXXXXXXXXXXXXXX").trim();
+      const adSlots = Array.from(document.querySelectorAll(".adsbygoogle.ad-slot"));
+      const validClient = ADS_CLIENT_ID && !ADS_CLIENT_ID.includes("XXXX");
+      const validSlots = adSlots.filter(slot => (slot.dataset.adSlot || "").trim() && !slot.dataset.adSlot.includes("REPLACE"));
+
+      if(validClient && validSlots.length){
+        const script = document.createElement("script");
+        script.async = true;
+        script.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client="+encodeURIComponent(ADS_CLIENT_ID);
+        script.crossOrigin = "anonymous";
+        script.onload = () => {
+          validSlots.forEach(slot => {
+            slot.setAttribute("data-ad-client", ADS_CLIENT_ID);
+            slot.classList.remove("ad-slot--placeholder");
+            const wrapper = slot.closest(".ad-wrapper");
+            if(wrapper){ wrapper.classList.add("ad-active"); }
+            (window.adsbygoogle = window.adsbygoogle || []).push({});
+          });
+        };
+        document.head.appendChild(script);
+      } else {
+        adSlots.forEach(slot => {
+          slot.classList.add("ad-slot--placeholder");
+          const wrapper = slot.closest(".ad-wrapper");
+          if(wrapper){ wrapper.classList.add("ad-wrapper--placeholder"); }
+        });
+        if(!validClient){
+          console.info("Adsense client ID not set. Assign window.ADSENSE_CLIENT_ID to enable ads.");
+        }
       }
-    },1500);
-  };
-  xhr.send(fd);
-});
-</script>
+    })();
+  </script>
 </body>
 </html>
