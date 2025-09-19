@@ -1,8 +1,9 @@
-from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi import FastAPI, UploadFile, File, HTTPException, BackgroundTasks
 from fastapi.responses import HTMLResponse, JSONResponse, FileResponse, Response
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
 import mailbox, csv, zipfile, io, uuid, json
+from email.parser import BytesHeaderParser
 
 # --- storage ---
 DATA = Path("/data"); UP = DATA/"uploads"; JOBS = DATA/"jobs"; OUT = Path("/downloads")
@@ -152,25 +153,47 @@ def _load(jid):
     p=_jpath(jid); return json.loads(p.read_text()) if p.exists() else None
 def _save(obj): _jpath(obj["id"]).write_text(json.dumps(obj))
 
+def _cleanup_job(jid: str, out_path: str):
+    try:
+        Path(out_path).unlink(missing_ok=True)
+    except Exception:
+        pass
+    try:
+        _jpath(jid).unlink(missing_ok=True)
+    except Exception:
+        pass
+
+
 def _parse_job(jid):
-    j=_load(jid); 
+    j=_load(jid);
     if not j: return
     j["status"]="processing"; j["processed"]=0; _save(j)
     src=Path(j["in_path"]); out_zip=OUT/f"{jid}-emails.zip"
     try:
         m = mailbox.mbox(str(src))
-        with zipfile.ZipFile(out_zip, "w", compression=zipfile.ZIP_DEFLATED) as zf:
-            with zf.open("emails.csv","w") as zmember:
-                with io.TextIOWrapper(zmember, encoding="utf-8", newline="") as txt:
-                    w = csv.writer(txt)
-                    w.writerow(["date","from","to","cc","bcc","subject","message_id"])
-                    for i,msg in enumerate(m,1):
-                        w.writerow([msg.get("Date",""), msg.get("From",""), msg.get("To",""),
-                                    msg.get("Cc",""), msg.get("Bcc",""), msg.get("Subject",""),
-                                    msg.get("Message-Id","")])
-                        if i % 50000 == 0:
-                            j["processed"]=i; _save(j)
-        j["status"]="done"; j["processed"]=i if 'i' in locals() else 0; j["out_path"]=str(out_zip); _save(j)
+        parser = BytesHeaderParser()
+        processed = 0
+        try:
+            with zipfile.ZipFile(out_zip, "w", compression=zipfile.ZIP_DEFLATED) as zf:
+                with zf.open("emails.csv","w") as zmember:
+                    with io.TextIOWrapper(zmember, encoding="utf-8", newline="") as txt:
+                        w = csv.writer(txt)
+                        w.writerow(["date","from","to","cc","bcc","subject","message_id"])
+                        for idx, key in enumerate(m.iterkeys(), 1):
+                            with m.get_file(key) as msg_fp:
+                                msg = parser.parse(msg_fp, headersonly=True)
+                            w.writerow([msg.get("Date",""), msg.get("From",""), msg.get("To",""),
+                                        msg.get("Cc",""), msg.get("Bcc",""), msg.get("Subject",""),
+                                        msg.get("Message-Id","")])
+                            processed = idx
+                            if processed % 50000 == 0:
+                                j["processed"]=processed; _save(j)
+            j["status"]="done"; j["processed"]=processed; j["out_path"]=str(out_zip); _save(j)
+        finally:
+            try:
+                m.close()
+            except Exception:
+                pass
     except Exception as e:
         j["status"]="error"; j["error"]=str(e); _save(j)
     finally:
@@ -207,8 +230,10 @@ def status(jid:str):
     return JSONResponse({"status":j["status"], "processed":j.get("processed"), "error":j.get("error")})
 
 @app.get("/download/{jid}")
-def download(jid:str):
+def download(jid:str, background_tasks: BackgroundTasks):
     j=_load(jid)
     if not j or j.get("status")!="done" or "out_path" not in j:
         raise HTTPException(404,"Not ready")
+    j["status"]="downloaded"; _save(j)
+    background_tasks.add_task(_cleanup_job, jid, j["out_path"])
     return FileResponse(j["out_path"], filename="emails.zip", media_type="application/zip")
