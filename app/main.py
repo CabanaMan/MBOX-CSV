@@ -115,7 +115,9 @@ body{margin:0;background:
 .progress{display:flex;align-items:center;gap:12px;margin-top:18px}
 .bar{flex:1;height:12px;border-radius:999px;background:#0b1b2f;border:1px solid var(--ring2);overflow:hidden}
 .fill{height:100%;width:0;background:linear-gradient(90deg,#22c55e,#7c5cff)}
-.pct{min-width:48px;text-align:right;color:var(--muted)}
+.pct{min-width:120px;display:flex;justify-content:flex-end;gap:10px;color:var(--muted);font-variant-numeric:tabular-nums;text-align:right}
+.pct span{display:inline-block}
+.pct .elapsed{opacity:.8}
 .status{min-height:24px;margin-top:10px;color:#cdd6e3}
 .note{margin-top:16px;color:var(--muted);font-size:14px}
 .main{flex:1;display:flex;flex-direction:column;gap:36px;padding-bottom:20px}
@@ -128,6 +130,10 @@ body{margin:0;background:
 .seo-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin-top:18px}
 .seo-grid article{background:#0b1224;border:1px solid #132035;border-radius:14px;padding:18px;color:#d4d9e4}
 .seo-grid h3{margin:0 0 8px;font-size:18px}
+.provider-grid article{display:flex;flex-direction:column;gap:8px}
+.provider-grid p{margin:0;color:#cdd6e3;font-size:14px}
+.provider-grid ol{margin:0;padding-left:20px;color:#cdd6e3;font-size:14px}
+.provider-grid li{margin:4px 0}
 .faq details{background:#0b1224;border:1px solid #132035;border-radius:14px;margin-top:12px;padding:16px}
 .faq summary{font-weight:600;cursor:pointer;color:#e6e9ef}
 .faq p{margin:12px 0 0;color:#cdd6e3}
@@ -185,7 +191,7 @@ kbd{background:#111a2e;padding:2px 6px;border-radius:6px;border:1px solid #1e293
 
         <div class="progress" aria-label="Progress">
           <div class="bar"><div id="fill" class="fill"></div></div>
-          <div id="pct" class="pct">0%</div>
+          <div class="pct"><span id="pct">0%</span><span id="elapsed" class="elapsed">00:00</span></div>
         </div>
 
         <div id="status" class="status" role="status" aria-live="polite">Idle.</div>
@@ -220,6 +226,85 @@ kbd{background:#111a2e;padding:2px 6px;border-radius:6px;border:1px solid #1e293
         </div>
       </section>
 
+      <section class="seo-section" id="export-guides">
+        <h2>How to export an MBOX from popular providers</h2>
+        <p>Use these quick steps to grab the right archive from your mailbox. Need more detail? Read the full <a href="/how-to">email export guide</a>.</p>
+        <div class="seo-grid provider-grid">
+          <article>
+            <h3>Gmail</h3>
+            <p>Google Takeout lets you export every label as an MBOX.</p>
+            <ol>
+              <li>Visit <a href="https://takeout.google.com" target="_blank" rel="noreferrer">takeout.google.com</a> and deselect all services.</li>
+              <li>Enable <strong>Mail</strong> → “All Mail data included” to pick labels if needed.</li>
+              <li>Choose a <strong>.zip</strong> export, start the archive, then download and unzip the resulting <strong>.mbox</strong> files.</li>
+            </ol>
+          </article>
+          <article>
+            <h3>Outlook.com / Hotmail</h3>
+            <p>Request a complete mailbox export from Microsoft’s privacy dashboard.</p>
+            <ol>
+              <li>Open <a href="https://account.microsoft.com/privacy" target="_blank" rel="noreferrer">account.microsoft.com/privacy</a> → <strong>Download your data</strong>.</li>
+              <li>Create a new export and choose <strong>Mail</strong> → Microsoft emails you when the PST is ready.</li>
+              <li>Download the archive and upload the included <strong>.pst</strong> or <strong>.mbox</strong> file for conversion.</li>
+            </ol>
+          </article>
+          <article>
+            <h3>Microsoft 365 / Outlook desktop</h3>
+            <p>Use the classic Import/Export wizard.</p>
+            <ol>
+              <li>In Outlook, go to <strong>File → Open &amp; Export → Import/Export</strong>.</li>
+              <li>Select <strong>Export to a file → Outlook Data File (.pst)</strong>.</li>
+              <li>Choose the mailbox or folder, pick a destination, and upload the resulting <strong>.pst</strong>.</li>
+            </ol>
+          </article>
+          <article>
+            <h3>Yahoo Mail</h3>
+            <p>Yahoo offers a data download tool for full mailbox exports.</p>
+            <ol>
+              <li>Go to the <a href="https://mail.yahoo.com/d/folders/1" target="_blank" rel="noreferrer">Yahoo Privacy Dashboard</a> → <strong>Download &amp; view your data</strong>.</li>
+              <li>Request a Mail export and wait for the email confirmation.</li>
+              <li>Download the archive and extract the <strong>.mbox</strong> inside.</li>
+            </ol>
+          </article>
+          <article>
+            <h3>Apple Mail &amp; iCloud</h3>
+            <p>Export directly from the Mail app on macOS.</p>
+            <ol>
+              <li>Select the mailbox or folder in Mail.</li>
+              <li>Choose <strong>Mailbox → Export Mailbox…</strong> and save the folder.</li>
+              <li>The export folder contains a ready-to-upload <strong>.mbox</strong> file.</li>
+            </ol>
+          </article>
+          <article>
+            <h3>Thunderbird</h3>
+            <p>Install a free add-on to save folders as MBOX.</p>
+            <ol>
+              <li>Install the <strong>ImportExportTools NG</strong> extension.</li>
+              <li>Right-click a folder → <strong>Export folder</strong> → choose <strong>MBOX</strong>.</li>
+              <li>Repeat for additional folders or use “Export all folders” to batch them.</li>
+            </ol>
+          </article>
+          <article>
+            <h3>Proton Mail</h3>
+            <p>Paid plans unlock their Import-Export application.</p>
+            <ol>
+              <li>Download the Proton Import-Export tool from your account settings.</li>
+              <li>Sign in, select the mailboxes to export, and choose the <strong>MBOX</strong> format.</li>
+              <li>Upload the generated archive here once the export completes.</li>
+            </ol>
+          </article>
+          <article>
+            <h3>Zoho Mail</h3>
+            <p>Zoho’s admin console can export any mailbox.</p>
+            <ol>
+              <li>Open <strong>Settings → Import/Export</strong>.</li>
+              <li>Select <strong>Export</strong>, pick the folder or account, and choose <strong>MBOX</strong>.</li>
+              <li>Start the export and download the <strong>.mbox</strong> file when notified.</li>
+            </ol>
+          </article>
+        </div>
+      </section>
+
       <section class="seo-section" id="faq">
         <h2>Frequently asked questions</h2>
         <div class="faq">
@@ -250,10 +335,40 @@ kbd{background:#111a2e;padding:2px 6px;border-radius:6px;border:1px solid #1e293
 
 <script>
 const $=s=>document.querySelector(s);
-const drop=$("#drop"), file=$("#file"), go=$("#go"), fill=$("#fill"), pct=$("#pct"), st=$("#status"), dl=$("#dl");
-let selected=null, job=null, poll=null;
+const drop=$("#drop"), file=$("#file"), go=$("#go"), fill=$("#fill"), pct=$("#pct"), elapsed=$("#elapsed"), st=$("#status"), dl=$("#dl");
+let selected=null, job=null, poll=null, timer=null, startedAt=null;
 
 function setPct(v){ fill.style.width=v+"%"; pct.textContent=Math.floor(v)+"%" }
+function renderElapsed(ms){
+  const totalSeconds = Math.floor(ms/1000);
+  const hours = Math.floor(totalSeconds/3600);
+  const minutes = Math.floor((totalSeconds%3600)/60);
+  const seconds = totalSeconds%60;
+  if(hours){
+    elapsed.textContent = `${hours}:${String(minutes).padStart(2,"0")}:${String(seconds).padStart(2,"0")}`;
+  } else {
+    elapsed.textContent = `${String(minutes).padStart(2,"0")}:${String(seconds).padStart(2,"0")}`;
+  }
+}
+function resetTimer(){
+  if(timer){ clearInterval(timer); timer=null; }
+  startedAt=null;
+  renderElapsed(0);
+}
+function startTimer(){
+  resetTimer();
+  startedAt=Date.now();
+  timer=setInterval(()=>{
+    if(!startedAt) return;
+    renderElapsed(Date.now()-startedAt);
+  },1000);
+}
+function stopTimer(){
+  if(timer){ clearInterval(timer); timer=null; }
+  if(startedAt){ renderElapsed(Date.now()-startedAt); }
+  startedAt=null;
+}
+resetTimer();
 function setSt(t){ st.textContent=t }
 
 drop.addEventListener("click",()=>file.click());
@@ -264,35 +379,41 @@ drop.addEventListener("drop",e=>{
   if(!e.dataTransfer.files.length) return;
   selected = e.dataTransfer.files[0];
   drop.querySelector(".hint").innerHTML = `<b>Selected:</b> ${selected.name}`;
-  go.disabled = false; setPct(0); setSt("Ready.");
+  go.disabled = false; setPct(0); setSt("Ready."); resetTimer();
 });
 file.addEventListener("change",e=>{
   if(!e.target.files.length) return;
   selected = e.target.files[0];
   drop.querySelector(".hint").innerHTML = `<b>Selected:</b> ${selected.name}`;
-  go.disabled = false; setPct(0); setSt("Ready.");
+  go.disabled = false; setPct(0); setSt("Ready."); resetTimer();
 });
 
 go.addEventListener("click",()=>{
   if(!selected) return;
   go.disabled=true; dl.style.display="none"; setSt("Uploading…");
+  if(poll){ clearInterval(poll); poll=null; }
+  startTimer();
   const fd = new FormData(); fd.append("file", selected);
   const xhr = new XMLHttpRequest();
   xhr.open("POST","/upload"); xhr.responseType="json";
   xhr.upload.onprogress = e => { if(e.lengthComputable) setPct(e.loaded/e.total*100) };
-  xhr.onerror = ()=>{ setSt("Network error."); go.disabled=false };
+  xhr.onerror = ()=>{ setSt("Network error."); go.disabled=false; stopTimer(); };
   xhr.onload = ()=>{
-    if(xhr.status!==200){ setSt("Error "+xhr.status); go.disabled=false; return }
+    if(xhr.status!==200){ setSt("Error "+xhr.status); go.disabled=false; stopTimer(); return }
     job = xhr.response.job_id; setPct(100); setSt("Upload complete. Parsing…");
     poll = setInterval(async ()=>{
-      const r = await fetch("/status/"+job).then(r=>r.json());
-      if(r.status==="processing"){ setSt(`Parsing… ${ (r.processed||0).toLocaleString() } messages`) }
-      else if(r.status==="done"){
-        clearInterval(poll);
-        dl.href="/download/"+job; dl.download="emails.zip"; dl.style.display="inline";
-        dl.click(); setSt("Done."); go.disabled=false;
-      } else if(r.status==="error"){
-        clearInterval(poll); setSt("Error: "+(r.error||"unknown")); go.disabled=false;
+      try{
+        const r = await fetch("/status/"+job).then(r=>r.json());
+        if(r.status==="processing"){ setSt(`Parsing… ${ (r.processed||0).toLocaleString() } messages`) }
+        else if(r.status==="done"){
+          clearInterval(poll); poll=null;
+          dl.href="/download/"+job; dl.download="emails.zip"; dl.style.display="inline";
+          dl.click(); setSt("Done."); go.disabled=false; stopTimer();
+        } else if(r.status==="error"){
+          clearInterval(poll); poll=null; setSt("Error: "+(r.error||"unknown")); go.disabled=false; stopTimer();
+        }
+      }catch(err){
+        clearInterval(poll); poll=null; setSt("Error checking status."); go.disabled=false; stopTimer();
       }
     }, 1500);
   };
