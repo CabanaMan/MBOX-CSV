@@ -1,0 +1,207 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8">
+<title>Support for mbox-csv.com | Troubleshooting, Guides, and Contact</title>
+<meta name="description" content="Find help using mbox-csv.com: troubleshoot conversions, follow export guides, check job status, and contact the operator.">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="canonical" href="https://mbox-csv.com/support">
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #060913;
+    --panel: rgba(18, 25, 46, 0.9);
+    --border: #1a2237;
+    --accent: #7c5cff;
+    --accent-soft: rgba(124, 92, 255, 0.16);
+    --text: #e8ecf5;
+    --muted: #96a3ba;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: Inter, system-ui, "Segoe UI", Roboto, Arial, sans-serif;
+    background: linear-gradient(180deg, rgba(11,17,35,0.95) 0%, #060913 120%);
+    color: var(--text);
+    line-height: 1.65;
+  }
+  header {
+    padding: 40px 24px 24px;
+    text-align: center;
+  }
+  header h1 {
+    margin: 0;
+    font-size: clamp(30px, 5vw, 40px);
+  }
+  header p {
+    margin: 14px auto 0;
+    max-width: 640px;
+    color: var(--muted);
+  }
+  nav {
+    margin-top: 18px;
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    flex-wrap: wrap;
+  }
+  nav a {
+    color: #9ecbff;
+    text-decoration: none;
+    font-weight: 600;
+  }
+  nav a:hover,
+  nav a:focus {
+    color: #c7ddff;
+    text-decoration: underline;
+  }
+  main {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+    display: grid;
+    gap: 24px;
+  }
+  section {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 26px;
+    box-shadow: 0 24px 70px rgba(3, 6, 18, 0.45);
+  }
+  section h2 {
+    margin-top: 0;
+    font-size: 24px;
+  }
+  section p {
+    margin: 12px 0 18px;
+  }
+  .link-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+  }
+  .support-card {
+    background: rgba(8, 12, 26, 0.9);
+    border: 1px solid rgba(61, 78, 120, 0.4);
+    border-radius: 16px;
+    padding: 18px;
+  }
+  .support-card h3 {
+    margin: 0 0 10px;
+    font-size: 18px;
+  }
+  .support-card p {
+    margin: 0 0 12px;
+    color: var(--muted);
+  }
+  .support-card a {
+    color: #9ecbff;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .support-card a:hover,
+  .support-card a:focus {
+    color: #c7ddff;
+    text-decoration: underline;
+  }
+  .status-list {
+    margin: 0;
+    padding-left: 20px;
+  }
+  .status-list li {
+    margin-bottom: 10px;
+  }
+  .faq-tip {
+    background: var(--accent-soft);
+    border: 1px solid rgba(124, 92, 255, 0.4);
+    border-radius: 14px;
+    padding: 16px;
+    margin-top: 16px;
+  }
+  .faq-tip strong {
+    color: #d6d9ff;
+  }
+  footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+    padding: 0 24px 32px;
+  }
+  @media (max-width: 640px) {
+    section { padding: 22px; }
+  }
+</style>
+</head>
+<body>
+  <header>
+    <h1>Support center</h1>
+    <p>Need help converting your mailbox? Follow the steps below to export your data, troubleshoot common errors, and reach the operator for one-on-one support.</p>
+    <nav>
+      <a href="/">Home</a>
+      <a href="#export-guide">Email export guide</a>
+      <a href="#troubleshooting">Troubleshooting</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+  <main>
+    <section id="quick-actions">
+      <h2>Quick actions</h2>
+      <div class="link-grid">
+        <article class="support-card">
+          <h3>Check job status</h3>
+          <p>Keep the conversion tab open or refresh <code>/status/&lt;job_id&gt;</code> to see progress updates.</p>
+          <a href="/">Open converter</a>
+        </article>
+        <article class="support-card">
+          <h3>Read the FAQ</h3>
+          <p>Find answers about file size limits, supported formats, and error messages.</p>
+          <a href="/faq">Go to FAQ</a>
+        </article>
+        <article class="support-card">
+          <h3>Privacy details</h3>
+          <p>Review how uploads are processed and when temporary files are deleted.</p>
+          <a href="/privacy">Privacy policy</a>
+        </article>
+        <article class="support-card">
+          <h3>Email the operator</h3>
+          <p>Send logs, job IDs, or billing questions directly to the maintainer.</p>
+          <a href="mailto:support@mbox-csv.com">support@mbox-csv.com</a>
+        </article>
+      </div>
+    </section>
+    <section id="export-guide">
+      <h2>Email export guide</h2>
+      <p>Start by downloading your mailbox. We support <strong>.mbox</strong> and <strong>.pst</strong> files from Gmail, Outlook, Yahoo, Apple Mail, Thunderbird, Proton Mail, Zoho, iCloud, and more.</p>
+      <p>Follow the full walkthrough for your provider on the dedicated <a href="/how-to">email export guide</a>, then return here to upload the archive.</p>
+      <div class="faq-tip">
+        <strong>Tip:</strong> If your archive is larger than 20&nbsp;GB, split the export into multiple files or run multiple exports so each upload stays within the limit.
+      </div>
+    </section>
+    <section id="troubleshooting">
+      <h2>Troubleshooting</h2>
+      <ul class="status-list">
+        <li><strong>Upload stuck at 0%?</strong> Refresh the page and try again. Very large files may take a few moments before the progress bar updates.</li>
+        <li><strong>“File too large” error?</strong> The archive exceeded the 20&nbsp;GB limit. Split the export and upload each part separately.</li>
+        <li><strong>“Not ready” when downloading?</strong> The job is still parsing. Wait until the status shows <strong>done</strong> before retrying.</li>
+        <li><strong>Job failed?</strong> Copy the job ID from the upload URL and include it when contacting support so we can investigate.</li>
+      </ul>
+      <div class="faq-tip">
+        Still stuck? Email <a href="mailto:support@mbox-csv.com">support@mbox-csv.com</a> with the job ID and a description of what happened.
+      </div>
+    </section>
+    <section id="contact">
+      <h2>Contact</h2>
+      <p>The fastest way to get help is to email <a href="mailto:support@mbox-csv.com">support@mbox-csv.com</a>. Include:</p>
+      <ul class="status-list">
+        <li>Your job ID (if you started an upload).</li>
+        <li>The approximate size of the archive.</li>
+        <li>Any error messages you saw.</li>
+      </ul>
+      <p>You can also use the <a href="/contact">contact form</a> if you prefer not to email directly.</p>
+    </section>
+  </main>
+  <footer>
+    &copy; <span id="year"></span> mbox-csv.com. <a href="/ads.txt" style="color:#9ecbff;text-decoration:none;">ads.txt</a> · <a href="/sitemap.xml" style="color:#9ecbff;text-decoration:none;">sitemap</a>
+  </footer>
+  <script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+</body></html>

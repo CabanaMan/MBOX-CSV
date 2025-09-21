@@ -1,62 +1,223 @@
 <!doctype html><html lang="en"><head>
 <meta charset="utf-8">
-<title>How to Export Email to MBOX or PST (Gmail, Outlook, Yahoo, Apple Mail, Thunderbird, Proton, Zoho, iCloud)</title>
-<meta name="description" content="Step-by-step instructions to export MBOX or PST from Gmail, Outlook/Office 365, Yahoo, Apple Mail, Thunderbird, Proton Mail, Zoho, and iCloud.">
+<title>Email Export Guide: Gmail, Outlook, Yahoo, Apple Mail, Thunderbird, Proton, Zoho, iCloud</title>
+<meta name="description" content="Step-by-step instructions to export email archives from Gmail, Outlook, Yahoo, Apple Mail, Thunderbird, Proton Mail, Zoho, and iCloud so you can convert them to CSV.">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="canonical" href="https://mbox-csv.com/how-to">
-<style>body{margin:0;background:#0b1020;color:#e6e9ef;font-family:system-ui,Inter,Arial}main{max-width:960px;margin:40px auto;padding:24px}h1{font-size:28px}h2{font-size:20px;color:#b9c2cf}a{color:#9ecbff}ol{line-height:1.6}code{background:#111a2e;padding:2px 6px;border-radius:6px;border:1px solid #1e293b}</style>
-</head><body><main>
-<h1>Export email to MBOX or PST</h1>
-<p>Export your mailbox using the steps below, then <a href="/">convert to CSV</a>.</p>
-
-<h2>Gmail → MBOX</h2>
-<ol>
-  <li>Open Google Takeout → deselect all → enable <b>Mail</b>.</li>
-  <li>Optional: “All Mail data included” to pick labels.</li>
-  <li>Choose <b>.zip</b> and a large file size split.</li>
-  <li>Export, download, and extract the archive to get <b>.mbox</b> files.</li>
-</ol>
-
-<h2>Microsoft Outlook (Microsoft 365 / Outlook.com / Exchange) → PST</h2>
-<ol>
-  <li>Use Outlook desktop (Windows/Mac).</li>
-  <li><b>File → Open & Export → Import/Export → Export to a file → Outlook Data File (.pst)</b>.</li>
-  <li>Select mailbox/folders → choose a save location → finish.</li>
-  <li>Upload the <b>.pst</b> here for conversion.</li>
-</ol>
-
-<h2>Apple Mail (macOS) → MBOX</h2>
-<ol>
-  <li>In Mail, select a mailbox/folder.</li>
-  <li><b>Mailbox → Export Mailbox…</b> → choose a folder → you get a <b>.mbox</b>.</li>
-</ol>
-
-<h2>Thunderbird → MBOX</h2>
-<ol>
-  <li>Install “ImportExportTools NG”.</li>
-  <li>Right-click a folder → <b>Export folder</b> → choose <b>MBOX</b>.</li>
-</ol>
-
-<h2>Proton Mail → MBOX</h2>
-<ol>
-  <li>Use Proton’s Import-Export app (paid plans).</li>
-  <li>Export selected mailboxes to get <b>.mbox</b>.</li>
-</ol>
-
-<h2>Yahoo Mail → MBOX</h2>
-<ol>
-  <li>Use Yahoo Data Download or add the account to Thunderbird and export as MBOX.</li>
-</ol>
-
-<h2>Zoho Mail → MBOX</h2>
-<ol>
-  <li>Settings → <b>Import/Export</b> → <b>Export</b> → pick folder → format <b>MBOX</b>.</li>
-</ol>
-
-<h2>iCloud Mail → MBOX</h2>
-<ol>
-  <li>Add iCloud to Apple Mail (macOS) and use <b>Mailbox → Export Mailbox…</b>.</li>
-</ol>
-
-<p>Have your file? <a href="/">Convert it to CSV</a>.</p>
-</main></body></html>
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #0b1020;
+    --panel: #101833;
+    --text: #e6e9ef;
+    --muted: #9aa4b2;
+    --accent: #7c5cff;
+    --border: #1f2942;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: Inter, system-ui, "Segoe UI", Roboto, Arial, sans-serif;
+    background: linear-gradient(180deg, rgba(15,23,42,.95) 0%, #0b1020 120%);
+    color: var(--text);
+    line-height: 1.65;
+  }
+  header {
+    padding: 32px 24px 16px;
+    text-align: center;
+  }
+  header h1 {
+    margin: 0;
+    font-size: clamp(28px, 5vw, 36px);
+    letter-spacing: .2px;
+  }
+  header p {
+    margin: 12px auto 0;
+    max-width: 640px;
+    color: var(--muted);
+  }
+  nav {
+    margin-top: 18px;
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    flex-wrap: wrap;
+  }
+  nav a {
+    color: #9ecbff;
+    text-decoration: none;
+    font-weight: 600;
+  }
+  nav a:hover,
+  nav a:focus {
+    color: #c7ddff;
+    text-decoration: underline;
+  }
+  main {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 16px 24px 64px;
+    display: grid;
+    gap: 24px;
+  }
+  section {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 24px;
+    box-shadow: 0 30px 80px rgba(3, 7, 18, 0.35);
+  }
+  section h2 {
+    margin-top: 0;
+    font-size: 22px;
+  }
+  section p {
+    margin: 12px 0 18px;
+  }
+  ol {
+    margin: 0;
+    padding-left: 20px;
+  }
+  li { margin-bottom: 10px; }
+  li:last-child { margin-bottom: 0; }
+  a { color: #9ecbff; }
+  a:hover,
+  a:focus { color: #c7ddff; }
+  .provider-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 18px;
+  }
+  .provider {
+    background: rgba(17, 27, 52, 0.92);
+    border: 1px solid rgba(61, 76, 120, 0.5);
+    border-radius: 16px;
+    padding: 18px 18px 8px;
+  }
+  .provider h3 {
+    margin: 0 0 8px;
+    font-size: 18px;
+    color: #f3f6ff;
+  }
+  .provider ol {
+    padding-left: 18px;
+    font-size: 15px;
+  }
+  .footer-note {
+    text-align: center;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  @media (max-width: 640px) {
+    section { padding: 22px; }
+    header { padding-top: 28px; }
+  }
+</style>
+</head>
+<body>
+  <header>
+    <h1>Email export guide</h1>
+    <p>Follow these instructions to download an MBOX or PST archive from your email provider. Once you have the file, <a href="/">upload it to mbox-csv.com</a> and we will convert the messages to a spreadsheet.</p>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/support">Support center</a>
+      <a href="/contact">Contact</a>
+    </nav>
+  </header>
+  <main>
+    <section id="getting-started">
+      <h2>Before you export</h2>
+      <p>Most providers let you download your email as either <strong>.mbox</strong> or <strong>.pst</strong> files. Both formats are supported. When possible, choose the option to split the export into multiple files so each archive is under 20&nbsp;GB.</p>
+      <p>If your provider only offers PST (Microsoft Outlook), you can still upload it directly—our backend converts PST to MBOX automatically before generating the CSV.</p>
+    </section>
+    <section id="popular-providers">
+      <h2>Step-by-step export instructions</h2>
+      <div class="provider-grid">
+        <article class="provider" id="gmail">
+          <h3>Gmail / Google Workspace</h3>
+          <ol>
+            <li>Open <a href="https://takeout.google.com" target="_blank" rel="noreferrer">Google Takeout</a> and click <strong>Deselect all</strong>.</li>
+            <li>Enable <strong>Mail</strong>, then choose <strong>All Mail data included</strong> to filter labels if needed.</li>
+            <li>Pick <strong>.zip</strong> as the delivery format, choose a large file size split (10&nbsp;GB or higher), and start the export.</li>
+            <li>When the archive is ready, download and unzip it. The <strong>.mbox</strong> files are inside the <code>Mail</code> folder.</li>
+          </ol>
+        </article>
+        <article class="provider" id="outlook">
+          <h3>Outlook (Microsoft 365 / Outlook.com)</h3>
+          <ol>
+            <li>Launch Outlook on Windows or macOS.</li>
+            <li>Go to <strong>File → Open &amp; Export → Import/Export</strong>.</li>
+            <li>Select <strong>Export to a file → Outlook Data File (.pst)</strong> and choose the folders to include.</li>
+            <li>Save the export. Upload the resulting <strong>.pst</strong> file here for conversion.</li>
+          </ol>
+        </article>
+        <article class="provider" id="privacy-dashboard">
+          <h3>Outlook.com privacy dashboard</h3>
+          <ol>
+            <li>Visit the <a href="https://account.microsoft.com/privacy" target="_blank" rel="noreferrer">Microsoft privacy dashboard</a> and sign in.</li>
+            <li>Open <strong>Download your data</strong>, create a new export, and enable <strong>Mail</strong>.</li>
+            <li>Microsoft emails you when the export is ready. Download the archive and extract the <strong>.pst</strong> file.</li>
+          </ol>
+        </article>
+        <article class="provider" id="apple-mail">
+          <h3>Apple Mail (macOS)</h3>
+          <ol>
+            <li>In Mail, select the mailbox or folder you want to export.</li>
+            <li>Choose <strong>Mailbox → Export Mailbox…</strong>, pick a destination folder, and click <strong>Choose</strong>.</li>
+            <li>macOS saves a ready-to-upload <strong>.mbox</strong> directory containing your messages.</li>
+          </ol>
+        </article>
+        <article class="provider" id="thunderbird">
+          <h3>Mozilla Thunderbird</h3>
+          <ol>
+            <li>Install the free <strong>ImportExportTools NG</strong> add-on from the Thunderbird extensions catalog.</li>
+            <li>Right-click the folder you want to export and choose <strong>ImportExportTools NG → Export folder</strong>.</li>
+            <li>Select the <strong>MBOX</strong> format and save the file.</li>
+          </ol>
+        </article>
+        <article class="provider" id="proton">
+          <h3>Proton Mail</h3>
+          <ol>
+            <li>Download the Proton Import-Export app (available on paid plans) from the settings page.</li>
+            <li>Sign in, pick the mailboxes to archive, and choose <strong>MBOX</strong> as the export format.</li>
+            <li>The tool creates encrypted archives; decrypt them with your password and upload the resulting <strong>.mbox</strong> files.</li>
+          </ol>
+        </article>
+        <article class="provider" id="yahoo">
+          <h3>Yahoo Mail</h3>
+          <ol>
+            <li>Open the <a href="https://mail.yahoo.com/d/folders/1" target="_blank" rel="noreferrer">Yahoo Privacy Dashboard</a>.</li>
+            <li>Create a new request under <strong>Download &amp; view your data</strong> and choose <strong>Mail</strong>.</li>
+            <li>When Yahoo emails the download link, extract the archive to find the <strong>.mbox</strong> file.</li>
+          </ol>
+        </article>
+        <article class="provider" id="zoho">
+          <h3>Zoho Mail</h3>
+          <ol>
+            <li>In Zoho Mail, go to <strong>Settings → Import/Export</strong>.</li>
+            <li>Select <strong>Export</strong>, pick the folder you need, and choose the <strong>MBOX</strong> format.</li>
+            <li>Submit the export request and download the archive when it is ready.</li>
+          </ol>
+        </article>
+        <article class="provider" id="icloud">
+          <h3>iCloud Mail</h3>
+          <ol>
+            <li>Add your iCloud account to Apple Mail on macOS if it is not already present.</li>
+            <li>Select the mailbox, then click <strong>Mailbox → Export Mailbox…</strong>.</li>
+            <li>Save the folder—inside you will find a standard <strong>.mbox</strong> archive.</li>
+          </ol>
+        </article>
+      </div>
+    </section>
+    <section id="next-steps">
+      <h2>After the export</h2>
+      <p>Once you have your archive:</p>
+      <ol>
+        <li><a href="/">Upload the file</a> on the homepage. Jobs up to 20&nbsp;GB are supported.</li>
+        <li>Leave the tab open while we parse the messages. Progress updates appear automatically.</li>
+        <li>When the conversion is complete, download the <code>emails.zip</code> package containing <code>emails.csv</code>.</li>
+      </ol>
+      <p class="footer-note">Need help or seeing errors? Visit the <a href="/support">support center</a> or <a href="/contact">contact the operator</a>.</p>
+    </section>
+  </main>
+</body></html>

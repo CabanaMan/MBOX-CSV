@@ -1,15 +1,39 @@
 <!doctype html><html lang="en"><head>
 <meta charset="utf-8">
 <title>Privacy Policy | mbox-csv.com</title>
-<meta name="description" content="Files are processed only for conversion and deleted after the download window. No sign-up or tracking identifiers.">
+<meta name="description" content="Learn how mbox-csv.com processes, stores, and deletes your email archives during MBOX to CSV conversion.">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="canonical" href="https://mbox-csv.com/privacy">
-<style>body{margin:0;background:#0b1020;color:#e6e9ef;font-family:system-ui,Inter,Arial}main{max-width:900px;margin:40px auto;padding:24px}a{color:#9ecbff}</style>
+<style>
+body{margin:0;background:#0b1020;color:#e6e9ef;font-family:system-ui,Inter,Arial}
+main{max-width:900px;margin:40px auto;padding:24px}
+h1{font-size:30px;margin-bottom:12px}
+h2{color:#b9c2cf;margin-top:24px}
+p{line-height:1.7}
+code{background:#111a2e;padding:2px 6px;border-radius:6px;border:1px solid #1e293b}
+a{color:#9ecbff}
+ul{line-height:1.7}
+</style>
 </head><body><main>
 <h1>Privacy Policy</h1>
-<p><b>Processing:</b> Files are used only to create <code>emails.csv</code>.</p>
-<p><b>Retention:</b> Source files are deleted after conversion. Output files are kept briefly for download, then purged.</p>
-<p><b>Security:</b> HTTPS enforced. Links are unique per job.</p>
-<p>Contact: <code>erikkileymusic87@gmail.com</code></p>
-<p><a href="/">Back to converter</a></p>
+<p>This policy explains how <strong>mbox-csv.com</strong> handles the archives you upload while converting email data to CSV. The goal is simple: process your file, deliver the output, and delete the temporary artifacts.</p>
+<h2>What we collect</h2>
+<p>We accept the file you upload (typically <code>.mbox</code> or <code>.pst</code>) and store it temporarily in a job-specific directory. No account is required and we do not log message contents beyond what is needed to generate the CSV.</p>
+<h2>How we use the data</h2>
+<ul>
+  <li>The converter parses headers (Date, From, To, Cc, Bcc, Subject, Message-ID) and writes them to <code>emails.csv</code>.</li>
+  <li>Processing happens on isolated infrastructure so that other jobs cannot read your archive.</li>
+  <li>The resulting CSV is zipped for download and never shared with third parties.</li>
+</ul>
+<h2>Retention</h2>
+<p>Both the uploaded archive and the generated ZIP are automatically removed after the download succeeds or when the job expires. We run periodic cleanup tasks to ensure no stragglers remain on disk.</p>
+<h2>Security</h2>
+<ul>
+  <li>HTTPS is enforced across the site.</li>
+  <li>Every job is assigned a random identifier that is required to download the export.</li>
+  <li>Access to the infrastructure is limited to the operator maintaining mbox-csv.com.</li>
+</ul>
+<h2>Contact</h2>
+<p>If you have compliance questions or need a signed data processing agreement, contact <a href="mailto:erikkileymusic87@gmail.com">erikkileymusic87@gmail.com</a>.</p>
+<p><a href="/">Back to the converter</a></p>
 </main></body></html>
