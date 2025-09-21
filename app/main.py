@@ -178,11 +178,7 @@ body{margin:0;background:
 .about-grid h3{margin:0 0 8px;font-size:18px}
 .keyword-cloud{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
 .keyword-cloud span{background:rgba(124,92,255,.16);border:1px solid #1f2a44;border-radius:999px;padding:6px 14px;font-size:13px;letter-spacing:.3px;color:#c7d2ff;font-weight:600}
-.ad-wrapper{margin:16px auto;width:100%;max-width:960px;padding:0 24px}
-.ad-slot{display:block;width:100%;min-height:90px;border-radius:16px;border:1.5px dashed var(--ring);background:#0b1224;position:relative}
-.ad-slot--placeholder::after{content:"Advertisement placeholder";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:14px;color:var(--muted);letter-spacing:.3px}
-.ad-wrapper .ad-note{margin-top:8px;font-size:12px;color:var(--muted);text-align:center}
-.ad-wrapper.ad-active .ad-note{display:none}
+.ad-wrapper{margin:16px auto;width:100%;max-width:960px;padding:0 24px;text-align:center;color:var(--muted);font-size:12px}
 .footer{margin:32px auto 28px;color:#7c8799;font-size:12px;text-align:center;padding:0 24px}
 a.dl{display:none;color:#22c55e;text-decoration:none;font-weight:600}
 kbd{background:#111a2e;padding:2px 6px;border-radius:6px;border:1px solid #1e293b}
@@ -215,8 +211,8 @@ kbd{background:#111a2e;padding:2px 6px;border-radius:6px;border:1px solid #1e293
   </header>
 
   <div class="ad-wrapper" aria-label="Top advertisement slot">
-    <ins class="adsbygoogle ad-slot ad-slot--placeholder" data-ad-slot="REPLACE_WITH_SLOT_ID" data-ad-format="auto" data-full-width-responsive="true"></ins>
-    <p class="ad-note">Set <code>window.ADSENSE_CLIENT_ID</code> and replace the slot ID to serve ads here.</p>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8714478254404273" crossorigin="anonymous"></script>
+    <p>Advertisements are served via Google AdSense.</p>
   </div>
 
   <main class="main">
@@ -425,8 +421,8 @@ kbd{background:#111a2e;padding:2px 6px;border-radius:6px;border:1px solid #1e293
   </main>
 
   <div class="ad-wrapper" aria-label="Bottom advertisement slot">
-    <ins class="adsbygoogle ad-slot ad-slot--placeholder" data-ad-slot="REPLACE_WITH_SLOT_ID" data-ad-format="auto" data-full-width-responsive="true"></ins>
-    <p class="ad-note">Add your production ad slot ID to show monetized creatives in this section.</p>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8714478254404273" crossorigin="anonymous"></script>
+    <p>Advertisements are served via Google AdSense.</p>
   </div>
 
   <footer class="footer">mbox-csv.com • Privacy-first • No data retained after conversion</footer>
@@ -518,40 +514,6 @@ go.addEventListener("click",()=>{
   };
   xhr.send(fd);
 });
-</script>
-<script>
-(function(){
-  const ADS_CLIENT_ID = (window.ADSENSE_CLIENT_ID || "ca-pub-XXXXXXXXXXXXXXXX").trim();
-  const adSlots = Array.from(document.querySelectorAll(".adsbygoogle.ad-slot"));
-  const validClient = ADS_CLIENT_ID && !ADS_CLIENT_ID.includes("XXXX");
-  const validSlots = adSlots.filter(slot => (slot.dataset.adSlot || "").trim() && !slot.dataset.adSlot.includes("REPLACE"));
-
-  if(validClient && validSlots.length){
-    const script = document.createElement("script");
-    script.async = true;
-    script.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client="+encodeURIComponent(ADS_CLIENT_ID);
-    script.crossOrigin = "anonymous";
-    script.onload = () => {
-      validSlots.forEach(slot => {
-        slot.setAttribute("data-ad-client", ADS_CLIENT_ID);
-        slot.classList.remove("ad-slot--placeholder");
-        const wrapper = slot.closest(".ad-wrapper");
-        if(wrapper){ wrapper.classList.add("ad-active"); }
-        (window.adsbygoogle = window.adsbygoogle || []).push({});
-      });
-    };
-    document.head.appendChild(script);
-  } else {
-    adSlots.forEach(slot => {
-      slot.classList.add("ad-slot--placeholder");
-      const wrapper = slot.closest(".ad-wrapper");
-      if(wrapper){ wrapper.classList.add("ad-wrapper--placeholder"); }
-    });
-    if(!validClient){
-      console.info("Adsense client ID not set. Assign window.ADSENSE_CLIENT_ID to enable ads.");
-    }
-  }
-})();
 </script>
 </body></html>
 """
