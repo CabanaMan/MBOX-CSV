@@ -1,5 +1,11 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException, BackgroundTasks
-from fastapi.responses import HTMLResponse, JSONResponse, FileResponse, Response
+from fastapi.responses import (
+    HTMLResponse,
+    JSONResponse,
+    FileResponse,
+    PlainTextResponse,
+    Response,
+)
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
 import mailbox, csv, zipfile, io, uuid, json
@@ -8,6 +14,7 @@ from email.parser import BytesHeaderParser
 # --- paths ---
 BASE_DIR = Path(__file__).resolve().parent
 PAGES = BASE_DIR / "pages"
+STATIC = BASE_DIR / "static"
 
 # --- storage ---
 DATA = Path("/data"); UP = DATA/"uploads"; JOBS = DATA/"jobs"; OUT = Path("/downloads")
@@ -26,6 +33,13 @@ def read_page(name: str) -> str:
     if not page_path.is_file():
         raise HTTPException(status_code=404, detail="Page not found")
     return page_path.read_text(encoding="utf-8")
+
+
+def read_static(name: str) -> str:
+    asset_path = STATIC / name
+    if not asset_path.is_file():
+        raise HTTPException(status_code=404, detail="Asset not found")
+    return asset_path.read_text(encoding="utf-8")
 
 # --- UI (sexy dark, responsive, one page) ---
 HTML = """<!doctype html><html lang="en"><head>
@@ -110,6 +124,9 @@ body{margin:0;background:
 .page{min-height:100%;display:flex;flex-direction:column}
 .container{max-width:960px;margin:0 auto;padding:28px 24px}
 .hero{padding-top:28px;padding-bottom:12px}
+.nav-links{display:flex;gap:18px;margin-top:18px;flex-wrap:wrap}
+.nav-links a{color:#9ecbff;text-decoration:none;font-weight:500}
+.nav-links a:hover,.nav-links a:focus{color:#c4dcff;text-decoration:underline}
 .hero .badge{width:16px;height:16px;border-radius:50%;background:conic-gradient(from 0deg,#7c5cff,#22c55e);box-shadow:0 0 22px #7c5cff88}
 .hero h1{margin:0;font-size:32px;letter-spacing:.3px}
 .hero .tagline{margin-top:8px;color:var(--muted);max-width:600px}
@@ -141,6 +158,7 @@ body{margin:0;background:
 .seo-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin-top:18px}
 .seo-grid article{background:#0b1224;border:1px solid #132035;border-radius:14px;padding:18px;color:#d4d9e4}
 .seo-grid h3{margin:0 0 8px;font-size:18px}
+.seo-grid p{color:#cdd6e3}
 .provider-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;margin-top:24px}
 .provider-card{background:linear-gradient(160deg,#0b1224 0%,#121b35 100%);border:1px solid #1b2a44;border-radius:18px;padding:22px;box-shadow:0 18px 40px #00000033;display:flex;flex-direction:column;gap:14px;min-height:220px}
 .provider-card header{display:flex;align-items:center;justify-content:space-between;gap:12px}
@@ -155,6 +173,11 @@ body{margin:0;background:
 .faq details{background:#0b1224;border:1px solid #132035;border-radius:14px;margin-top:12px;padding:16px}
 .faq summary{font-weight:600;cursor:pointer;color:#e6e9ef}
 .faq p{margin:12px 0 0;color:#cdd6e3}
+.about-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin-top:18px}
+.about-grid article{background:#0b1224;border:1px solid #132035;border-radius:14px;padding:18px;color:#d4d9e4}
+.about-grid h3{margin:0 0 8px;font-size:18px}
+.keyword-cloud{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.keyword-cloud span{background:rgba(124,92,255,.16);border:1px solid #1f2a44;border-radius:999px;padding:6px 14px;font-size:13px;letter-spacing:.3px;color:#c7d2ff;font-weight:600}
 .ad-wrapper{margin:16px auto;width:100%;max-width:960px;padding:0 24px}
 .ad-slot{display:block;width:100%;min-height:90px;border-radius:16px;border:1.5px dashed var(--ring);background:#0b1224;position:relative}
 .ad-slot--placeholder::after{content:"Advertisement placeholder";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:14px;color:var(--muted);letter-spacing:.3px}
@@ -182,6 +205,12 @@ kbd{background:#111a2e;padding:2px 6px;border-radius:6px;border:1px solid #1e293
           <p class="tagline">Upload up to 20 GB per file, convert everything on secure servers, and receive a clean <b>emails.csv</b> download ready for analysis.</p>
         </div>
       </div>
+      <nav class="nav-links" aria-label="Helpful links">
+        <a href="/how-to">Export instructions</a>
+        <a href="/faq">FAQ</a>
+        <a href="/privacy">Privacy</a>
+        <a href="/contact">Contact</a>
+      </nav>
     </div>
   </header>
 
@@ -346,6 +375,33 @@ kbd{background:#111a2e;padding:2px 6px;border-radius:6px;border:1px solid #1e293
             </ol>
           </article>
         </div>
+      </section>
+
+      <section class="seo-section" id="about">
+        <h2>About mbox-csv.com</h2>
+        <p><strong>mbox-csv.com</strong> is a focused utility built for teams that need a dependable way to turn raw email archives into spreadsheets. Search engines sometimes surface generic converters; this is the original hosted app designed specifically for <em>MBOX to CSV</em> workflows.</p>
+        <div class="about-grid">
+          <article>
+            <h3>Built for analysts</h3>
+            <p>Every conversion produces a consistent header row and UTF-8 output so your BI tools, CRM imports, or audit spreadsheets work without cleanup.</p>
+          </article>
+          <article>
+            <h3>Secure processing</h3>
+            <p>Jobs run in isolated directories, links are unique per upload, and files are deleted automatically after delivery.</p>
+          </article>
+          <article>
+            <h3>Why Google “mbox csv” users choose us</h3>
+            <p>Unlike desktop scripts or unmaintained projects, mbox-csv.com handles multi-gigabyte archives in the cloud with progress tracking and support from a real operator.</p>
+          </article>
+        </div>
+        <div class="keyword-cloud" aria-label="Popular searches">
+          <span>mbox csv converter</span>
+          <span>mbox-csv.com</span>
+          <span>convert gmail mbox to csv</span>
+          <span>mbox email export</span>
+          <span>mbox to spreadsheet</span>
+        </div>
+        <p style="margin-top:18px">Need a hand? <a href="/contact">Email the operator</a> and we will help with stuck archives or custom data pulls.</p>
       </section>
 
       <section class="seo-section" id="faq">
@@ -563,6 +619,54 @@ def how_to(): return read_page("how-to.html")
 
 @app.head("/how-to")
 def how_to_head(): return Response(status_code=200)
+
+@app.get("/faq", response_class=HTMLResponse)
+def faq(): return read_page("faq.html")
+
+
+@app.head("/faq")
+def faq_head(): return Response(status_code=200)
+
+
+@app.get("/privacy", response_class=HTMLResponse)
+def privacy(): return read_page("privacy.html")
+
+
+@app.head("/privacy")
+def privacy_head(): return Response(status_code=200)
+
+
+@app.get("/contact", response_class=HTMLResponse)
+def contact(): return read_page("contact.html")
+
+
+@app.head("/contact")
+def contact_head(): return Response(status_code=200)
+
+
+@app.get("/robots.txt", response_class=PlainTextResponse)
+def robots_txt(): return read_static("robots.txt")
+
+
+@app.head("/robots.txt")
+def robots_head(): return Response(status_code=200)
+
+
+@app.get("/sitemap.xml")
+def sitemap_xml():
+    return Response(read_static("sitemap.xml"), media_type="application/xml")
+
+
+@app.head("/sitemap.xml")
+def sitemap_head(): return Response(status_code=200)
+
+
+@app.get("/ads.txt", response_class=PlainTextResponse)
+def ads_txt(): return read_static("ads.txt")
+
+
+@app.head("/ads.txt")
+def ads_head(): return Response(status_code=200)
 
 @app.post("/upload")
 async def upload(file: UploadFile = File(...)):
