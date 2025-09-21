@@ -620,6 +620,7 @@ def how_to(): return read_page("how-to.html")
 @app.head("/how-to")
 def how_to_head(): return Response(status_code=200)
 
+
 @app.get("/faq", response_class=HTMLResponse)
 def faq(): return read_page("faq.html")
 
