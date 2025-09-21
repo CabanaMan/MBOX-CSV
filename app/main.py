@@ -5,6 +5,10 @@ from concurrent.futures import ThreadPoolExecutor
 import mailbox, csv, zipfile, io, uuid, json
 from email.parser import BytesHeaderParser
 
+# --- paths ---
+BASE_DIR = Path(__file__).resolve().parent
+PAGES = BASE_DIR / "pages"
+
 # --- storage ---
 DATA = Path("/data"); UP = DATA/"uploads"; JOBS = DATA/"jobs"; OUT = Path("/downloads")
 for p in (DATA, UP, JOBS, OUT): p.mkdir(parents=True, exist_ok=True)
@@ -15,6 +19,13 @@ CHUNK = 16 * 1024 * 1024
 POOL = ThreadPoolExecutor(max_workers=2)
 
 app = FastAPI()
+
+# --- helpers ---
+def read_page(name: str) -> str:
+    page_path = PAGES / name
+    if not page_path.is_file():
+        raise HTTPException(status_code=404, detail="Page not found")
+    return page_path.read_text(encoding="utf-8")
 
 # --- UI (sexy dark, responsive, one page) ---
 HTML = """<!doctype html><html lang="en"><head>
@@ -130,10 +141,17 @@ body{margin:0;background:
 .seo-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin-top:18px}
 .seo-grid article{background:#0b1224;border:1px solid #132035;border-radius:14px;padding:18px;color:#d4d9e4}
 .seo-grid h3{margin:0 0 8px;font-size:18px}
-.provider-grid article{display:flex;flex-direction:column;gap:8px}
-.provider-grid p{margin:0;color:#cdd6e3;font-size:14px}
-.provider-grid ol{margin:0;padding-left:20px;color:#cdd6e3;font-size:14px}
-.provider-grid li{margin:4px 0}
+.provider-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;margin-top:24px}
+.provider-card{background:linear-gradient(160deg,#0b1224 0%,#121b35 100%);border:1px solid #1b2a44;border-radius:18px;padding:22px;box-shadow:0 18px 40px #00000033;display:flex;flex-direction:column;gap:14px;min-height:220px}
+.provider-card header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.provider-card h3{margin:0;font-size:18px;color:#f2f5ff}
+.provider-tag{background:rgba(124,92,255,.12);color:#9faaf5;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:600;letter-spacing:.3px;text-transform:uppercase}
+.provider-card p{margin:0;color:#cdd6e3;font-size:14px;line-height:1.6}
+.step-list{counter-reset:step;margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px}
+.step-list li{counter-increment:step;position:relative;padding-left:38px;font-size:14px;color:#d7dceb;line-height:1.55}
+.step-list li::before{content:counter(step);position:absolute;left:0;top:0;width:26px;height:26px;border-radius:50%;background:rgba(124,92,255,.22);color:#c7d2ff;font-weight:600;display:flex;align-items:center;justify-content:center}
+.step-list a{color:#9ecbff;text-decoration:none;font-weight:500}
+.step-list a:hover{color:#c4dcff}
 .faq details{background:#0b1224;border:1px solid #132035;border-radius:14px;margin-top:12px;padding:16px}
 .faq summary{font-weight:600;cursor:pointer;color:#e6e9ef}
 .faq p{margin:12px 0 0;color:#cdd6e3}
@@ -150,6 +168,7 @@ kbd{background:#111a2e;padding:2px 6px;border-radius:6px;border:1px solid #1e293
   .panel{padding:24px}
   .drop{padding:32px}
   .seo-section{padding:24px}
+  .provider-card{padding:20px}
 }
 </style>
 </head><body>
@@ -229,76 +248,100 @@ kbd{background:#111a2e;padding:2px 6px;border-radius:6px;border:1px solid #1e293
       <section class="seo-section" id="export-guides">
         <h2>How to export an MBOX from popular providers</h2>
         <p>Use these quick steps to grab the right archive from your mailbox. Need more detail? Read the full <a href="/how-to">email export guide</a>.</p>
-        <div class="seo-grid provider-grid">
-          <article>
-            <h3>Gmail</h3>
-            <p>Google Takeout lets you export every label as an MBOX.</p>
-            <ol>
-              <li>Visit <a href="https://takeout.google.com" target="_blank" rel="noreferrer">takeout.google.com</a> and deselect all services.</li>
-              <li>Enable <strong>Mail</strong> → “All Mail data included” to pick labels if needed.</li>
-              <li>Choose a <strong>.zip</strong> export, start the archive, then download and unzip the resulting <strong>.mbox</strong> files.</li>
+        <div class="provider-grid">
+          <article class="provider-card">
+            <header>
+              <h3>Gmail</h3>
+              <span class="provider-tag">MBOX</span>
+            </header>
+            <p>Export every label or your entire inbox with Google Takeout.</p>
+            <ol class="step-list">
+              <li>Visit <a href="https://takeout.google.com" target="_blank" rel="noreferrer">Google Takeout</a> and deselect all services.</li>
+              <li>Enable <strong>Mail</strong>, then use “All Mail data included” if you want only certain labels.</li>
+              <li>Choose a <strong>.zip</strong> export, create the archive, and unzip the downloaded <strong>.mbox</strong> files.</li>
             </ol>
           </article>
-          <article>
-            <h3>Outlook.com / Hotmail</h3>
+          <article class="provider-card">
+            <header>
+              <h3>Outlook.com / Hotmail</h3>
+              <span class="provider-tag">PST</span>
+            </header>
             <p>Request a complete mailbox export from Microsoft’s privacy dashboard.</p>
-            <ol>
+            <ol class="step-list">
               <li>Open <a href="https://account.microsoft.com/privacy" target="_blank" rel="noreferrer">account.microsoft.com/privacy</a> → <strong>Download your data</strong>.</li>
-              <li>Create a new export and choose <strong>Mail</strong> → Microsoft emails you when the PST is ready.</li>
-              <li>Download the archive and upload the included <strong>.pst</strong> or <strong>.mbox</strong> file for conversion.</li>
+              <li>Create a new export, choose <strong>Mail</strong>, and wait for the email notification that the PST is ready.</li>
+              <li>Download the archive and upload the included <strong>.pst</strong> (or extracted <strong>.mbox</strong>) for conversion.</li>
             </ol>
           </article>
-          <article>
-            <h3>Microsoft 365 / Outlook desktop</h3>
-            <p>Use the classic Import/Export wizard.</p>
-            <ol>
+          <article class="provider-card">
+            <header>
+              <h3>Microsoft 365 / Outlook desktop</h3>
+              <span class="provider-tag">PST</span>
+            </header>
+            <p>Use the classic Import/Export wizard on Windows or macOS.</p>
+            <ol class="step-list">
               <li>In Outlook, go to <strong>File → Open &amp; Export → Import/Export</strong>.</li>
               <li>Select <strong>Export to a file → Outlook Data File (.pst)</strong>.</li>
-              <li>Choose the mailbox or folder, pick a destination, and upload the resulting <strong>.pst</strong>.</li>
+              <li>Pick the mailbox or folder, choose where to save it, and upload the resulting <strong>.pst</strong>.</li>
             </ol>
           </article>
-          <article>
-            <h3>Yahoo Mail</h3>
-            <p>Yahoo offers a data download tool for full mailbox exports.</p>
-            <ol>
+          <article class="provider-card">
+            <header>
+              <h3>Yahoo Mail</h3>
+              <span class="provider-tag">MBOX</span>
+            </header>
+            <p>Yahoo’s privacy dashboard offers full mailbox exports.</p>
+            <ol class="step-list">
               <li>Go to the <a href="https://mail.yahoo.com/d/folders/1" target="_blank" rel="noreferrer">Yahoo Privacy Dashboard</a> → <strong>Download &amp; view your data</strong>.</li>
-              <li>Request a Mail export and wait for the email confirmation.</li>
-              <li>Download the archive and extract the <strong>.mbox</strong> inside.</li>
+              <li>Request a Mail export and watch for the confirmation email.</li>
+              <li>Download the archive and extract the enclosed <strong>.mbox</strong> file.</li>
             </ol>
           </article>
-          <article>
-            <h3>Apple Mail &amp; iCloud</h3>
+          <article class="provider-card">
+            <header>
+              <h3>Apple Mail &amp; iCloud</h3>
+              <span class="provider-tag">MBOX</span>
+            </header>
             <p>Export directly from the Mail app on macOS.</p>
-            <ol>
-              <li>Select the mailbox or folder in Mail.</li>
-              <li>Choose <strong>Mailbox → Export Mailbox…</strong> and save the folder.</li>
+            <ol class="step-list">
+              <li>Select the mailbox or folder you want to archive.</li>
+              <li>Choose <strong>Mailbox → Export Mailbox…</strong> and pick a destination folder.</li>
               <li>The export folder contains a ready-to-upload <strong>.mbox</strong> file.</li>
             </ol>
           </article>
-          <article>
-            <h3>Thunderbird</h3>
-            <p>Install a free add-on to save folders as MBOX.</p>
-            <ol>
+          <article class="provider-card">
+            <header>
+              <h3>Thunderbird</h3>
+              <span class="provider-tag">MBOX</span>
+            </header>
+            <p>Install a free add-on to save any folder as an MBOX file.</p>
+            <ol class="step-list">
               <li>Install the <strong>ImportExportTools NG</strong> extension.</li>
               <li>Right-click a folder → <strong>Export folder</strong> → choose <strong>MBOX</strong>.</li>
-              <li>Repeat for additional folders or use “Export all folders” to batch them.</li>
+              <li>Repeat for extra folders or use “Export all folders” to batch them.</li>
             </ol>
           </article>
-          <article>
-            <h3>Proton Mail</h3>
-            <p>Paid plans unlock their Import-Export application.</p>
-            <ol>
-              <li>Download the Proton Import-Export tool from your account settings.</li>
+          <article class="provider-card">
+            <header>
+              <h3>Proton Mail</h3>
+              <span class="provider-tag">MBOX</span>
+            </header>
+            <p>Paid plans unlock Proton’s Import-Export desktop app.</p>
+            <ol class="step-list">
+              <li>Download the Import-Export tool from your Proton Mail account settings.</li>
               <li>Sign in, select the mailboxes to export, and choose the <strong>MBOX</strong> format.</li>
-              <li>Upload the generated archive here once the export completes.</li>
+              <li>Upload the generated archive once the export finishes.</li>
             </ol>
           </article>
-          <article>
-            <h3>Zoho Mail</h3>
-            <p>Zoho’s admin console can export any mailbox.</p>
-            <ol>
-              <li>Open <strong>Settings → Import/Export</strong>.</li>
-              <li>Select <strong>Export</strong>, pick the folder or account, and choose <strong>MBOX</strong>.</li>
+          <article class="provider-card">
+            <header>
+              <h3>Zoho Mail</h3>
+              <span class="provider-tag">MBOX</span>
+            </header>
+            <p>Admins can export any mailbox from Zoho’s settings.</p>
+            <ol class="step-list">
+              <li>Open <strong>Settings → Import/Export</strong> in the Zoho Mail admin console.</li>
+              <li>Select <strong>Export</strong>, choose the folder or account, and pick <strong>MBOX</strong>.</li>
               <li>Start the export and download the <strong>.mbox</strong> file when notified.</li>
             </ol>
           </article>
@@ -514,6 +557,12 @@ def home(): return HTML
 
 @app.head("/")
 def head_ok(): return Response(status_code=200)
+
+@app.get("/how-to", response_class=HTMLResponse)
+def how_to(): return read_page("how-to.html")
+
+@app.head("/how-to")
+def how_to_head(): return Response(status_code=200)
 
 @app.post("/upload")
 async def upload(file: UploadFile = File(...)):
