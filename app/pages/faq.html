@@ -2,7 +2,7 @@
 <meta charset="utf-8">
 <title>MBOX to CSV FAQ | mbox-csv.com</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="Answers to the most common MBOX to CSV conversion questions including limits, formats, troubleshooting, and data retention at mbox-csv.com.">
+<meta name="description" content="Answers to the most common MBOX to CSV conversion questions including limits, optional fields, troubleshooting, and data retention at mbox-csv.com.">
 <link rel="canonical" href="https://mbox-csv.com/faq">
 <script type="application/ld+json">
 {
@@ -22,7 +22,15 @@
       "name": "Which formats are supported?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "mbox-csv.com ingests standard .mbox exports as well as Outlook .pst archives that contain MBOX data after extraction."
+        "text": "mbox-csv.com ingests standard .mbox exports. PST archives require either a manual concierge conversion or a local PST-to-MBOX tool before upload."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What optional data can I include?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Toggles on the homepage add Gmail thread IDs, the plain-text body (trimmed to 32K characters), and an attachments.csv manifest listing filenames, content types, and byte sizes."
       }
     },
     {
@@ -30,7 +38,7 @@
       "name": "How is my data protected?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Files are processed in isolated directories. Source archives are deleted after the CSV is packaged and the download link expires automatically."
+        "text": "Uploads are stored in isolated directories, transferred over TLS, verified with SHA-256, and deleted automatically after conversion or within 24 hours."
       }
     }
   ]
@@ -48,21 +56,26 @@ strong{color:#f5f7ff}
 a{color:#9ecbff}
 .note{margin-top:30px;font-size:14px;color:#9aa4b2}
 ul{line-height:1.7}
+figure{margin:16px 0 0}
+figure img{max-width:100%;border:1px solid #1f2a3d;border-radius:12px}
 </style>
 </head><body><main>
 <h1>MBOX to CSV FAQ</h1>
 <p>This page collects the most common questions from customers searching for “mbox csv” support. If you do not see your issue answered below, <a href="/contact">email the operator</a> and we will help.</p>
 <div class="faq-card" id="size">
   <h2>What file size can I upload?</h2>
-  <p>Each conversion job supports uploads up to <strong>20 GB</strong>. The system streams directly to disk, which prevents browser memory crashes. If your archive is larger, split it into multiple files using the export tool of your email provider and queue them one after another.</p>
+  <p>Each conversion job supports uploads up to <strong>20 GB</strong>. The system streams directly to disk and resumes interrupted transfers so browser memory crashes are avoided. If your archive is larger, split it into multiple files using the export tool of your email provider and queue them one after another.</p>
 </div>
 <div class="faq-card" id="formats">
   <h2>Which formats are supported?</h2>
-  <p>mbox-csv.com handles standard <strong>.mbox</strong> files from Gmail, Thunderbird, Apple Mail, Yahoo, Proton, Zoho, and other clients. Outlook users can upload a <strong>.pst</strong> file; the service extracts the mailbox and converts it into the same CSV layout. We can also ingest <strong>.eml</strong> collections on request.</p>
+  <p>mbox-csv.com handles standard <strong>.mbox</strong> files from Gmail, Thunderbird, Apple Mail, Yahoo, Proton, Zoho, and other clients. Outlook users should convert their <strong>.pst</strong> export to MBOX with a local tool such as MailStore Home, or <a href="/contact">request concierge conversion</a> and we will process it for you.</p>
 </div>
 <div class="faq-card" id="columns">
   <h2>What columns are included in the CSV?</h2>
-  <p>Every row includes <code>date</code>, <code>from</code>, <code>to</code>, <code>cc</code>, <code>bcc</code>, <code>subject</code>, and <code>message_id</code>. These fields cover most compliance and CRM import workflows. If you need message bodies or attachments, <a href="/contact">reach out</a> for a scoped export.</p>
+  <p>Every row includes <code>date</code>, <code>from</code>, <code>to</code>, <code>cc</code>, <code>bcc</code>, <code>subject</code>, and <code>message_id</code>. Optional toggles add Gmail thread IDs, the plain-text body (trimmed to 32K characters), and a separate <code>attachments.csv</code> with filename, content type, and size metadata.</p>
+  <figure>
+    <img src="/static/csv-preview.svg" alt="Screenshot of the CSV output">
+  </figure>
 </div>
 <div class="faq-card" id="speed">
   <h2>How fast is the conversion?</h2>
@@ -70,11 +83,11 @@ ul{line-height:1.7}
 </div>
 <div class="faq-card" id="privacy">
   <h2>How is my data protected?</h2>
-  <p>Uploads are stored in a private working directory tied to your job ID. When the CSV is zipped and handed back, both the source file and output archive are scheduled for deletion. HTTPS is enforced end-to-end. See the <a href="/privacy">privacy policy</a> for details.</p>
+  <p>Uploads are stored in a private working directory tied to your job ID. When the CSV is zipped and handed back, both the source file and output archive are scheduled for deletion (automatically within 24 hours). HTTPS is enforced end-to-end and each chunk is verified with SHA-256. See the <a href="/privacy">privacy policy</a> for details.</p>
 </div>
 <div class="faq-card" id="errors">
   <h2>How do I fix upload errors?</h2>
-  <p>If you see a “file too large” message, the archive exceeded 20 GB. Split the export and retry. For “Not ready” download errors, the job may still be processing—wait for the status to show <strong>Ready</strong> or <strong>Done</strong> and refresh. Persistent issues? <a href="/contact">Contact support</a> with the job ID.</p>
+  <p>If you see a “file too large” message, the archive exceeded 20 GB. Split the export and retry. For “Not ready” download errors, the job may still be processing—wait for the status to show <strong>Done</strong> and refresh. Persistent issues? <a href="/contact">Contact support</a> with the job ID.</p>
 </div>
 <p class="note">Tip: bookmark <a href="https://mbox-csv.com">mbox-csv.com</a> so the official converter is easy to find the next time you search for “mbox csv”.</p>
 <p><a href="/">Back to the converter</a></p>
