@@ -1,0 +1,22 @@
+html,body{height:100%}
+body{margin:0;font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;-webkit-text-size-adjust:100%;background:#0b1020;padding-bottom:env(safe-area-inset-bottom,0)}
+*{box-sizing:border-box}
+a{color:#79a8ff;text-decoration:none}
+h1{font-size:clamp(22px,5.5vw,28px);margin:0 0 8px}
+.wrap{max-width:760px;margin:0 auto;padding:20px 16px}
+.card{border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:16px;background:#10172a}
+.grid{display:grid;gap:14px}
+@media(min-width:640px){.grid.cols-2{grid-template-columns:1fr 1fr}}
+
+.drop{border:2px dashed rgba(255,255,255,.15);border-radius:14px;padding:18px;text-align:center}
+.drop input[type=file]{display:none}
+.btn,button,label[for]{display:inline-flex;align-items:center;justify-content:center;height:48px;min-width:44px;border-radius:12px;padding:0 18px;border:1px solid rgba(255,255,255,.12);background:linear-gradient(180deg,#1a2542,#141d36);color:#fff;font-weight:600;cursor:pointer}
+
+.progress{height:10px;background:#0c1326;border-radius:999px;overflow:hidden;border:1px solid rgba(255,255,255,.12)}
+.progress>i{display:block;height:100%;width:0}
+.preview{max-height:240px;overflow:auto;background:#0c1324;border:1px solid rgba(255,255,255,.08);border-radius:10px}
+.table{width:100%;border-collapse:collapse;font-size:14px}
+.table th,.table td{padding:10px 12px;white-space:nowrap;border-bottom:1px solid rgba(255,255,255,.06)}
+.table th{position:sticky;top:0;background:#0e1730}
+
+footer{margin:18px 0 6px;text-align:center;font-size:13px;color:#9aa6be}

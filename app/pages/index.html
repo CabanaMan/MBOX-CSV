@@ -3,7 +3,8 @@
 <head>
   <meta charset="utf-8">
   <title>MBOX → CSV Email Converter | Free 20 GB Uploads</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="format-detection" content="telephone=no">
   <meta name="description" content="Convert large MBOX email archives to CSV spreadsheets in minutes. Upload up to 20 GB, let our server parse the messages, and download a privacy-first ZIP export.">
   <meta name="keywords" content="mbox to csv, email converter, export gmail mbox, pst to csv alternative, email archive to spreadsheet">
   <link rel="canonical" href="https://mbox-csv.com/">
@@ -19,6 +20,7 @@
   <meta name="twitter:description" content="Convert large MBOX archives to CSV spreadsheets with server-side parsing.">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/app.css">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -74,8 +76,7 @@
       --ring:#334155;--ring2:#1f2937;--ok:#22c55e;--err:#ef4444;
     }
     *{box-sizing:border-box}
-    html,body{height:100%}
-    body{margin:0;background:
+    body{margin:0;padding-bottom:env(safe-area-inset-bottom,0);background:
       radial-gradient(1200px 800px at 75% -10%,#2a3458 0%,transparent 60%),
       radial-gradient(1000px 600px at -20% 40%,#1a2040 0%,transparent 55%),var(--bg);
       color:var(--text);font-family:Inter,system-ui,Segoe UI,Roboto,Arial;line-height:1.6;
@@ -86,20 +87,25 @@
     .hero .badge{width:16px;height:16px;border-radius:50%;background:conic-gradient(from 0deg,#7c5cff,#22c55e);box-shadow:0 0 22px #7c5cff88}
     .hero h1{margin:0;font-size:32px;letter-spacing:.3px}
     .hero .tagline{margin-top:8px;color:var(--muted);max-width:600px}
-    .panel{background:linear-gradient(180deg,#0d1428 0%,#0c1326 100%);border:1px solid var(--ring2);border-radius:18px;padding:28px;box-shadow:0 20px 60px #0007}
-    .panel h2{margin:0 0 12px;font-size:24px}
-    .drop{border:1.5px dashed var(--ring);border-radius:16px;padding:42px;text-align:center;cursor:pointer;transition:.15s;background:#0b1224}
-    .drop:hover{border-color:#55627a}
+    .nav-links{display:flex;gap:18px;margin-top:18px;flex-wrap:wrap}
+    .nav-links a{color:#9ecbff;text-decoration:none;font-weight:500}
+    .nav-links a:hover,.nav-links a:focus{color:#c4dcff;text-decoration:underline}
+    .panel{background:linear-gradient(180deg,#0d1428 0%,#0c1326 100%);border:1px solid var(--ring2);border-radius:18px;padding:28px;box-shadow:0 20px 60px #0007;display:flex;flex-direction:column;gap:18px}
+    .panel h2{margin:0;font-size:24px}
+    .panel .card{background:rgba(12,18,36,.85);border:1px solid rgba(255,255,255,.08)}
+    .small{font-size:14px;line-height:1.6;color:#cdd6e3}
+    .drop{border:2px dashed rgba(124,148,216,.4);border-radius:16px;padding:22px;text-align:center;cursor:pointer;transition:border-color .2s ease,background .2s ease;background:rgba(7,12,28,.85);display:flex;flex-direction:column;gap:12px;align-items:center;justify-content:center}
+    .drop:hover{border-color:#7da6ff}
     .drop.drag{background:#0e1a34;border-color:#7c5cff}
-    .drop .hint{color:var(--muted)}
-    .controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:20px}
-    .btn{display:inline-flex;align-items:center;gap:10px;padding:12px 18px;border:0;border-radius:12px;font-weight:600;cursor:pointer}
-    .btn-primary{background:linear-gradient(90deg,#7c5cff,#5b85ff);color:#0b0f1e}
-    .btn[disabled]{opacity:.6;cursor:not-allowed}
-    .progress{display:flex;align-items:center;gap:12px;margin-top:18px}
-    .bar{flex:1;height:12px;border-radius:999px;background:#0b1b2f;border:1px solid var(--ring2);overflow:hidden}
-    .fill{height:100%;width:0;background:linear-gradient(90deg,#22c55e,#7c5cff)}
-    .pct{min-width:48px;text-align:right;color:var(--muted)}
+    .drop label.btn{width:100%;max-width:220px}
+    .controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:4px}
+    .btn{gap:10px;border-radius:12px;font-weight:600;min-height:48px;padding:0 20px}
+    .btn-primary{background:linear-gradient(135deg,#79a8ff,#5b85ff);color:#041023;border:0;box-shadow:0 8px 24px rgba(91,133,255,.25)}
+    .btn-primary[disabled]{opacity:.65;cursor:not-allowed;box-shadow:none}
+    .btn-link{background:transparent;border:1px solid transparent;color:#9ecbff;text-decoration:underline;font-weight:600}
+    .btn-link:hover,.btn-link:focus{color:#c4dcff}
+    .progress{background:#0c1326;border-radius:999px;overflow:hidden;border:1px solid rgba(255,255,255,.12);height:10px;transition:opacity .2s ease}
+    .progress>i{background:linear-gradient(90deg,#22c55e,#79a8ff);transition:width .2s ease;height:100%}
     .status{min-height:24px;margin-top:10px;color:#cdd6e3}
     .note{margin-top:16px;color:var(--muted);font-size:14px}
     .main{flex:1;display:flex;flex-direction:column;gap:36px;padding-bottom:20px}
@@ -121,12 +127,13 @@
     .faq p{margin:12px 0 0;color:#cdd6e3}
     .ad-wrapper{margin:16px auto;width:100%;max-width:960px;padding:0 24px;text-align:center;color:var(--muted);font-size:12px}
     .footer{margin:32px auto 28px;color:#7c8799;font-size:12px;text-align:center;padding:0 24px}
-    a.dl{display:none;color:#22c55e;text-decoration:none;font-weight:600}
     kbd{background:#111a2e;padding:2px 6px;border-radius:6px;border:1px solid #1e293b}
     @media (max-width:720px){
-      .hero h1{font-size:28px}
-      .panel{padding:24px}
-      .drop{padding:32px}
+      .hero h1{font-size:clamp(24px,7vw,32px)}
+      .container{padding:24px 18px}
+      .panel{padding:22px}
+      .panel .card{padding:16px}
+      .controls{gap:10px}
       .seo-section{padding:24px}
     }
   </style>
@@ -161,23 +168,32 @@
       <div class="container">
         <section class="panel" aria-label="MBOX to CSV conversion form">
           <h2>Convert your archive</h2>
-          <div id="drop" class="drop" role="button" aria-label="Upload area">
-            <div style="font-size:18px;margin-bottom:6px">Drag &amp; drop your <b>.mbox</b> here</div>
-            <div class="hint">or click to choose a file from your device</div>
-            <input id="file" type="file" accept=".mbox" hidden>
-          </div>
+          <section class="card grid cols-2" style="gap:14px">
+            <div class="drop" id="drop" role="button" tabindex="0" aria-label="Upload area">
+              <p id="dropMsg" class="small" style="margin:6px 0 10px;color:#a9b4c8">Drag &amp; drop .mbox or</p>
+              <label class="btn" for="file">Choose .mbox file</label>
+              <input id="file" name="file" type="file" accept=".mbox">
+              <div class="progress" id="pwrap" hidden><i id="pbar"></i></div>
+              <div id="peta" class="small" style="text-align:center;margin-top:8px"></div>
+            </div>
+
+            <div>
+              <div class="small" style="color:#a9b4c8;margin-bottom:6px">CSV preview</div>
+              <div class="preview">
+                <table class="table" id="previewTable">
+                  <thead><tr><th>Date</th><th>From</th><th>To</th><th>Subject</th></tr></thead>
+                  <tbody><tr><td colspan="4" class="small">Select a file to preview headers.</td></tr></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
 
           <div class="controls">
             <button id="go" class="btn btn-primary" disabled>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l9 4-9 4-9-4 9-4Zm0 7l9 4-9 4-9-4 9-4Zm0 7l9 4-9 4-9-4 9-4Z"/></svg>
               Upload &amp; Convert
             </button>
-            <a id="dl" class="dl">Download ZIP</a>
-          </div>
-
-          <div class="progress" aria-label="Progress">
-            <div class="bar"><div id="fill" class="fill"></div></div>
-            <div id="pct" class="pct">0%</div>
+            <a id="dl" class="btn btn-link" style="display:none">Download ZIP</a>
           </div>
 
           <div id="status" class="status" role="status" aria-live="polite">Idle.</div>
@@ -322,58 +338,152 @@
 
   <script>
     const $=s=>document.querySelector(s);
-    const drop=$("#drop"), file=$("#file"), go=$("#go"), fill=$("#fill"), pct=$("#pct"), st=$("#status"), dl=$("#dl");
-    let selected=null, job=null, poll=null;
+    const drop=$('#drop'), file=$('#file'), go=$('#go'), dl=$('#dl');
+    const dropMsg=$('#dropMsg'), statusEl=$('#status'), previewBody=document.querySelector('#previewTable tbody');
+    const pwrap=$('#pwrap'), pbar=$('#pbar'), peta=$('#peta');
+    const defaultDropText=dropMsg?.textContent||'';
+    const defaultPreviewHTML=previewBody?.innerHTML||'';
+    let selected=null, job=null, poll=null, startTime=0;
 
-    function setPct(v){ fill.style.width=v+"%"; pct.textContent=Math.floor(v)+"%"; }
-    function setSt(t){ st.textContent=t; }
+    function setDropMessage(text){ if(dropMsg) dropMsg.textContent=text||defaultDropText; }
+    function enableCTA(){ if(go) go.disabled=!selected; }
+    function resetProgress(){ if(pwrap) pwrap.hidden=true; if(pbar) pbar.style.width='0%'; if(peta) peta.textContent=''; }
+    function setStatus(text){ if(statusEl) statusEl.textContent=text; }
 
-    drop.addEventListener("click",()=>file.click());
-    ["dragover","dragenter"].forEach(evn=>drop.addEventListener(evn,e=>{
-      e.preventDefault(); drop.classList.add("drag");
-    }));
-    ["dragleave","drop"].forEach(evn=>drop.addEventListener(evn,()=>{
-      drop.classList.remove("drag");
-    }));
-    drop.addEventListener("drop",e=>{
-      e.preventDefault();
-      if(!e.dataTransfer.files.length) return;
-      selected=e.dataTransfer.files[0];
-      drop.querySelector(".hint").innerHTML=`<b>Selected:</b> ${selected.name}`;
-      go.disabled=false; setPct(0); setSt("Ready.");
+    function resetPreview(){ if(previewBody) previewBody.innerHTML=defaultPreviewHTML; }
+    function showPreviewMessage(text){ if(previewBody) previewBody.innerHTML=`<tr><td colspan="4" class="small">${text}</td></tr>`; }
+
+    function handleFile(fileObj){
+      if(!fileObj) return;
+      selected=fileObj;
+      setDropMessage(`Selected: ${fileObj.name}`);
+      enableCTA();
+      resetProgress();
+      showPreviewMessage('Preview available after upload starts.');
+    }
+
+    drop?.addEventListener('click',event=>{
+      if(event.target instanceof HTMLLabelElement) return;
+      file?.click();
     });
-    file.addEventListener("change",e=>{
-      if(!e.target.files.length) return;
-      selected=e.target.files[0];
-      drop.querySelector(".hint").innerHTML=`<b>Selected:</b> ${selected.name}`;
-      go.disabled=false; setPct(0); setSt("Ready.");
+    drop?.addEventListener('keydown',event=>{
+      if(event.key==='Enter'||event.key===' '){
+        event.preventDefault();
+        file?.click();
+      }
+    });
+    ['dragover','dragenter'].forEach(evt=>drop?.addEventListener(evt,event=>{
+      event.preventDefault();
+      drop.classList.add('drag');
+    }));
+    ['dragleave','dragend','drop'].forEach(evt=>drop?.addEventListener(evt,()=>{
+      drop.classList.remove('drag');
+    }));
+    drop?.addEventListener('drop',event=>{
+      event.preventDefault();
+      const f=event.dataTransfer?.files?.[0];
+      if(!f) return;
+      handleFile(f);
     });
 
-    go.addEventListener("click",()=>{
+    file?.addEventListener('change',event=>{
+      const f=event.target.files?.[0];
+      if(!f) return;
+      handleFile(f);
+    });
+
+    window.__uploadProgress=(loaded,total,t0)=>{
+      if(!total) return;
+      if(pwrap) pwrap.hidden=false;
+      const pct=Math.min(100,Math.max(0,(loaded/total)*100));
+      if(pbar) pbar.style.width=pct.toFixed(1)+'%';
+      const elapsed=(performance.now()-(t0||performance.now()))/1000||0.001;
+      const rate=loaded/Math.max(elapsed,0.001);
+      const remain=Math.max(0,(total-loaded)/Math.max(rate,0.001));
+      const m=Math.floor(remain/60);
+      const s=Math.round(remain%60);
+      if(peta) peta.textContent=`${pct.toFixed(0)}% • ${m}:${String(s).padStart(2,'0')} remaining`;
+    };
+
+    function clearPoll(){ if(poll){ clearInterval(poll); poll=null; } }
+
+    go?.addEventListener('click',()=>{
       if(!selected) return;
-      go.disabled=true; dl.style.display="none"; setSt("Uploading…");
-      const fd=new FormData(); fd.append("file",selected);
+      clearPoll();
+      go.disabled=true;
+      if(dl) dl.style.display='none';
+      setStatus('Uploading…');
+      startTime=performance.now();
+      resetProgress();
+      window.__uploadProgress(0,selected.size||1,startTime);
+      const fd=new FormData(); fd.append('file',selected);
       const xhr=new XMLHttpRequest();
-      xhr.open("POST","/upload"); xhr.responseType="json";
-      xhr.upload.onprogress=e=>{ if(e.lengthComputable) setPct(e.loaded/e.total*100); };
-      xhr.onerror=()=>{ setSt("Network error."); go.disabled=false; };
+      xhr.open('POST','/upload');
+      xhr.responseType='json';
+      xhr.upload.onprogress=event=>{
+        if(event.lengthComputable){
+          window.__uploadProgress(event.loaded,event.total,startTime);
+        }
+      };
+      xhr.onerror=()=>{
+        setStatus('Network error.');
+        enableCTA();
+        showPreviewMessage('Upload interrupted. Try again.');
+        resetProgress();
+      };
       xhr.onload=()=>{
-        if(xhr.status!==200){ setSt("Error "+xhr.status); go.disabled=false; return; }
-        job=xhr.response.job_id; setPct(100); setSt("Parsing…");
-        poll=setInterval(async ()=>{
-          const r=await fetch("/status/"+job).then(r=>r.json());
-          if(r.status==="processing"){ setSt(`Parsing… ${(r.processed||0).toLocaleString()} messages`); }
-          else if(r.status==="done"){
-            clearInterval(poll);
-            dl.href="/download/"+job; dl.download="emails.zip"; dl.style.display="inline";
-            dl.click(); setSt("Done."); go.disabled=false;
-          } else if(r.status==="error"){
-            clearInterval(poll); setSt("Error: "+(r.error||"unknown")); go.disabled=false;
+        if(xhr.status!==200){
+          setStatus('Error '+xhr.status);
+          enableCTA();
+          showPreviewMessage('Upload failed. Please retry.');
+          resetProgress();
+          return;
+        }
+        job=xhr.response.job_id;
+        window.__uploadProgress(selected.size||1,selected.size||1,startTime);
+        setStatus('Parsing…');
+        poll=setInterval(async()=>{
+          try{
+            const response=await fetch('/status/'+job);
+            const data=await response.json();
+            if(data.status==='processing'){
+              setStatus(`Parsing… ${(data.processed||0).toLocaleString()} messages`);
+            }else if(data.status==='done'){
+              clearPoll();
+              if(dl){
+                dl.href='/download/'+job;
+                dl.download='emails.zip';
+                dl.style.display='inline-flex';
+                dl.click();
+              }
+              setStatus('Done.');
+              enableCTA();
+              resetProgress();
+              showPreviewMessage('Download emails.zip to review the CSV export.');
+            }else if(data.status==='error'){
+              clearPoll();
+              setStatus('Error: '+(data.error||'unknown'));
+              enableCTA();
+              showPreviewMessage('Conversion failed. Please retry your upload.');
+              resetProgress();
+            }
+          }catch(err){
+            clearPoll();
+            setStatus('Error fetching status.');
+            enableCTA();
+            showPreviewMessage('Connection lost. Refresh to try again.');
+            resetProgress();
           }
         },1500);
       };
       xhr.send(fd);
+      if(file) file.value='';
     });
+
+    enableCTA();
+    resetProgress();
+    setDropMessage(defaultDropText);
+    resetPreview();
   </script>
 </body>
 </html>
