@@ -2,22 +2,21 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>MBOX → CSV Email Converter | Free 20 GB Uploads</title>
+  <title>MBOX to CSV Converter — mbox-csv.com</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="format-detection" content="telephone=no">
-  <meta name="description" content="Convert large MBOX email archives to CSV spreadsheets in minutes. Upload up to 20 GB, let our server parse the messages, and download a privacy-first ZIP export.">
-  <meta name="keywords" content="mbox to csv, email converter, export gmail mbox, pst to csv alternative, email archive to spreadsheet">
-  <link rel="canonical" href="https://mbox-csv.com/">
+  <meta name="description" content="Free web tool to convert MBOX email exports to CSV. Upload .mbox, download emails.csv in a ZIP. No installs.">
   <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://mbox-csv.com/">
   <meta name="author" content="MBOX-CSV">
   <meta name="theme-color" content="#0b1020">
-  <meta property="og:type" content="website">
-  <meta property="og:title" content="MBOX → CSV Email Converter">
-  <meta property="og:description" content="Fast, secure, and free MBOX to CSV conversion with uploads up to 20 GB.">
+  <meta property="og:title" content="MBOX to CSV Converter — mbox-csv.com">
+  <meta property="og:description" content="Free web tool to convert MBOX to CSV. No software install.">
   <meta property="og:url" content="https://mbox-csv.com/">
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="MBOX → CSV Email Converter">
-  <meta name="twitter:description" content="Convert large MBOX archives to CSV spreadsheets with server-side parsing.">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="MBOX to CSV Converter — mbox-csv.com">
+  <meta name="twitter:description" content="Free web tool to convert MBOX to CSV. No software install.">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/static/app.css">
@@ -26,43 +25,60 @@
     "@context": "https://schema.org",
     "@graph": [
       {
-        "@type": "SoftwareApplication",
-        "name": "MBOX → CSV Email Converter",
-        "applicationCategory": "UtilityApplication",
-        "operatingSystem": "Web",
-        "description": "Convert MBOX email archives to CSV securely online. Upload up to 20 GB, parse messages server-side, and download a ZIP export.",
-        "url": "https://mbox-csv.com/",
+        "@type": "Organization",
+        "name": "mbox-csv.com",
+        "url": "https://mbox-csv.com"
+      },
+      {
+        "@type": "WebSite",
+        "name": "mbox-csv.com",
+        "url": "https://mbox-csv.com",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://mbox-csv.com/?q={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      },
+      {
+        "@type": "WebApplication",
+        "name": "MBOX to CSV Converter",
+        "applicationCategory": "UtilitiesApplication",
+        "operatingSystem": "Any",
+        "url": "https://mbox-csv.com",
+        "isAccessibleForFree": true,
         "offers": {
           "@type": "Offer",
           "price": "0",
           "priceCurrency": "USD"
-        }
+        },
+        "description": "Free web tool that converts .mbox email exports to CSV and returns a ZIP with emails.csv.",
+        "browserRequirements": "Requires a modern web browser"
       },
       {
         "@type": "FAQPage",
         "mainEntity": [
           {
             "@type": "Question",
-            "name": "Can I convert very large MBOX files?",
+            "name": "Is mbox-csv.com a paid desktop app?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Yes. The converter accepts archives up to 20 GB and streams them directly on the server for reliable processing."
+              "text": "No. It is a free web tool that runs in the browser."
             }
           },
           {
             "@type": "Question",
-            "name": "What data is included in the CSV export?",
+            "name": "Do I need to install software?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Each row in emails.csv contains the message date, sender, recipients, subject, and the Message-ID header for easy spreadsheet analysis."
+              "text": "No installs. Upload your .mbox and download a CSV."
             }
           },
           {
             "@type": "Question",
-            "name": "Do you retain my uploaded emails?",
+            "name": "What do I get after conversion?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "No. Files are processed in a private job directory and removed automatically after conversion completes."
+              "text": "A ZIP archive containing emails.csv with parsed fields."
             }
           }
         ]
@@ -86,7 +102,7 @@
     .hero{padding-top:28px;padding-bottom:12px}
     .hero .badge{width:16px;height:16px;border-radius:50%;background:conic-gradient(from 0deg,#7c5cff,#22c55e);box-shadow:0 0 22px #7c5cff88}
     .hero h1{margin:0;font-size:32px;letter-spacing:.3px}
-    .hero .tagline{margin-top:8px;color:var(--muted);max-width:600px}
+    .hero p{margin-top:8px;color:var(--muted);max-width:600px}
     .nav-links{display:flex;gap:18px;margin-top:18px;flex-wrap:wrap}
     .nav-links a{color:#9ecbff;text-decoration:none;font-weight:500}
     .nav-links a:hover,.nav-links a:focus{color:#c4dcff;text-decoration:underline}
@@ -145,8 +161,8 @@
         <div style="display:flex;align-items:center;gap:14px">
           <div class="badge" aria-hidden="true"></div>
           <div>
-            <h1>MBOX → CSV Email Converter</h1>
-            <p class="tagline">Upload up to 20 GB per file, convert everything on secure servers, and receive a clean <b>emails.csv</b> download ready for analysis.</p>
+            <h1>Free MBOX to CSV Converter</h1>
+            <p>mbox-csv.com is a free browser-based tool. Upload an .mbox file and download a CSV (emails.csv) in a ZIP. No software install.</p>
             <nav class="nav-links" aria-label="Support navigation">
               <a href="/support">Support</a>
               <a href="/faq">FAQ</a>
