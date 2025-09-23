@@ -16,7 +16,7 @@ import uuid
 import json
 import hashlib
 import math
-from typing import Optional, Dict
+from typing import Optional, Dict, Any
 
 from email.parser import BytesHeaderParser, BytesParser
 from email import policy
@@ -520,6 +520,12 @@ kbd{background:#111a2e;padding:2px 6px;border-radius:6px;border:1px solid #1e293
 <script>
 const $=s=>document.querySelector(s);
 const drop=$("#drop"), file=$("#file"), browse=$("#browse"), go=$("#go"), fill=$("#fill"), pct=$("#pct"), eta=$("#eta"), elapsed=$("#elapsed"), st=$("#status"), dl=$("#dl"), optThread=$("#opt-thread"), optBody=$("#opt-body"), optAttachments=$("#opt-attachments");
+const DEFAULT_UPLOAD_WEIGHT=0.6;
+const DEFAULT_PARSE_FALLBACK_SECONDS=45;
+const progressState={
+  upload:{total:0,uploaded:0,startedAt:null,completed:false,completedAt:null,duration:0},
+  parse:{total:0,processed:0,startedAt:null,completed:false,completedAt:null}
+};
 let selected=null, job=null, poll=null, timer=null, startedAt=null;
 
 function setPct(v){ fill.style.width=v+"%"; pct.textContent=Math.min(100,Math.floor(v)) + "%" }
@@ -549,6 +555,139 @@ function renderEta(seconds){
     eta.textContent = `ETA ${String(minutes).padStart(2,"0")}:${String(secs).padStart(2,"0")}`;
   }
 }
+function resetProgressTracking(){
+  progressState.upload.total=0;
+  progressState.upload.uploaded=0;
+  progressState.upload.startedAt=null;
+  progressState.upload.completed=false;
+  progressState.upload.completedAt=null;
+  progressState.upload.duration=0;
+  progressState.parse.total=0;
+  progressState.parse.processed=0;
+  progressState.parse.startedAt=null;
+  progressState.parse.completed=false;
+  progressState.parse.completedAt=null;
+}
+function beginJobTracking(totalBytes){
+  resetProgressTracking();
+  progressState.upload.total=totalBytes||0;
+  progressState.upload.startedAt=Date.now();
+  updateProgress();
+}
+function updateProgress(){
+  const now=Date.now();
+  const upload=progressState.upload;
+  const parse=progressState.parse;
+  const uploadTotal=upload.total||0;
+  const uploadFraction=uploadTotal>0?Math.min(1,upload.uploaded/uploadTotal):0;
+  const uploadElapsedSeconds=upload.startedAt?((upload.completedAt||now)-upload.startedAt)/1000:0;
+  const uploadDuration=upload.completed?upload.duration:uploadElapsedSeconds;
+  let parseFraction=0;
+  const parseTotal=parse.total||0;
+  if(parse.completed){
+    parseFraction=1;
+  }else if(parseTotal>0 && parse.processed>=0){
+    parseFraction=Math.min(1,parse.processed/parseTotal);
+  }
+  const parseElapsedSeconds=parse.startedAt?((parse.completedAt||now)-parse.startedAt)/1000:0;
+  let parseEstimatedTotal=null;
+  if(parseFraction>0){
+    parseEstimatedTotal=parseElapsedSeconds/parseFraction;
+  }else if(parse.completed){
+    parseEstimatedTotal=parseElapsedSeconds;
+  }
+  let uploadWeight=DEFAULT_UPLOAD_WEIGHT;
+  let parseWeight=1-DEFAULT_UPLOAD_WEIGHT;
+  if(parseEstimatedTotal!==null && uploadDuration>0){
+    const totalTime=uploadDuration+parseEstimatedTotal;
+    if(totalTime>0){
+      uploadWeight=uploadDuration/totalTime;
+      parseWeight=parseEstimatedTotal/totalTime;
+    }
+  }
+  const progressFraction=(uploadFraction*uploadWeight)+(parseFraction*parseWeight);
+  setPct(progressFraction*100);
+  let remainingSeconds=0;
+  if(uploadFraction<1 && uploadWeight>0){
+    if(uploadFraction>0){
+      const estimatedUploadTotal=uploadElapsedSeconds/Math.max(uploadFraction,1e-6);
+      const uploadRemaining=estimatedUploadTotal-uploadElapsedSeconds;
+      if(uploadRemaining>0){
+        remainingSeconds+=uploadRemaining;
+      }
+    }
+  }
+  if(parseWeight>0 && parseFraction<1){
+    if(parseEstimatedTotal!==null){
+      const parseRemaining=parseEstimatedTotal-parseElapsedSeconds;
+      if(parseRemaining>0){
+        remainingSeconds+=parseRemaining;
+      }
+    }else if(parse.startedAt){
+      remainingSeconds+=DEFAULT_PARSE_FALLBACK_SECONDS;
+    }
+  }
+  if(remainingSeconds>0){
+    renderEta(remainingSeconds);
+  }else if(uploadFraction>=1 && parseFraction>=1){
+    renderEta(0);
+  }else{
+    renderEta(NaN);
+  }
+}
+function updateUploadMetrics(uploaded,total){
+  const now=Date.now();
+  if(total>0){
+    progressState.upload.total=total;
+  }
+  progressState.upload.uploaded=Math.min(progressState.upload.total,Math.max(0,uploaded));
+  if(!progressState.upload.startedAt){
+    progressState.upload.startedAt=now;
+  }
+  updateProgress();
+}
+function markUploadComplete(){
+  const now=Date.now();
+  if(!progressState.upload.startedAt){
+    progressState.upload.startedAt=now;
+  }
+  progressState.upload.completed=true;
+  progressState.upload.completedAt=now;
+  progressState.upload.uploaded=progressState.upload.total;
+  progressState.upload.duration=(now-progressState.upload.startedAt)/1000;
+  updateProgress();
+}
+function updateParseTracking(status,processed,totalMessages){
+  const now=Date.now();
+  if(status==="queued" || status==="processing" || status==="done"){
+    if(!progressState.parse.startedAt){
+      progressState.parse.startedAt=now;
+    }
+  }
+  if(Number.isFinite(totalMessages) && totalMessages>=0){
+    progressState.parse.total=Math.max(progressState.parse.total,totalMessages);
+  }
+  if(Number.isFinite(processed) && processed>=0){
+    progressState.parse.processed=processed;
+    if(progressState.parse.total>0 && processed>progressState.parse.total){
+      progressState.parse.total=processed;
+    }
+  }
+  if(status==="done"){
+    progressState.parse.completed=true;
+    progressState.parse.completedAt=now;
+    if(progressState.parse.total===0 && Number.isFinite(processed)){
+      progressState.parse.total=Math.max(0,processed);
+    }
+  }else if(status==="error"){
+    progressState.parse.completed=false;
+    progressState.parse.completedAt=null;
+  }else if(status==="queued" || status==="processing"){
+    progressState.parse.completed=false;
+    progressState.parse.completedAt=null;
+  }
+  updateProgress();
+}
 function resetTimer(){
   if(timer){ clearInterval(timer); timer=null; }
   startedAt=null;
@@ -568,22 +707,10 @@ function stopTimer(){
   if(startedAt){ renderElapsed(Date.now()-startedAt); }
   startedAt=null;
 }
+resetProgressTracking();
+updateProgress();
 resetTimer();
 function setSt(t){ st.textContent=t }
-
-function updateUploadMetrics(uploaded,total){
-  if(total>0){
-    setPct(uploaded/total*100);
-    if(startedAt){
-      const elapsedSeconds = (Date.now()-startedAt)/1000;
-      const speed = elapsedSeconds>0 ? uploaded/elapsedSeconds : 0;
-      const remaining = total-uploaded;
-      if(speed>0){
-        renderEta(remaining/speed);
-      }
-    }
-  }
-}
 
 drop.addEventListener("click",()=>file.click());
 drop.addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); file.click(); }});
@@ -594,13 +721,21 @@ drop.addEventListener("drop",e=>{
   if(!e.dataTransfer.files.length) return;
   selected = e.dataTransfer.files[0];
   drop.querySelector(".hint").innerHTML = `<b>Selected:</b> ${selected.name}`;
-  go.disabled = false; setPct(0); setSt("Ready."); resetTimer();
+  go.disabled = false;
+  resetProgressTracking();
+  updateProgress();
+  setSt("Ready.");
+  resetTimer();
 });
 file.addEventListener("change",e=>{
   if(!e.target.files.length) return;
   selected = e.target.files[0];
   drop.querySelector(".hint").innerHTML = `<b>Selected:</b> ${selected.name}`;
-  go.disabled = false; setPct(0); setSt("Ready."); resetTimer();
+  go.disabled = false;
+  resetProgressTracking();
+  updateProgress();
+  setSt("Ready.");
+  resetTimer();
 });
 browse.addEventListener("click",()=>file.click());
 
@@ -643,6 +778,7 @@ go.addEventListener("click",async()=>{
   go.disabled=true; dl.style.display="none"; setSt("Preparing upload…");
   if(poll){ clearInterval(poll); poll=null; }
   startTimer();
+  beginJobTracking(selected.size);
   try{
     const initPayload = {
       filename: selected.name,
@@ -660,23 +796,33 @@ go.addEventListener("click",async()=>{
     job = init.job_id;
     renderEta(NaN);
     await uploadChunks(init.chunk_size);
-    setPct(100);
-    renderEta(0);
+    markUploadComplete();
     setSt("Upload complete. Parsing…");
     poll = setInterval(async ()=>{
       try{
         const r = await fetch("/status/"+job).then(r=>r.json());
-        if(r.status==="processing"){ setSt(`Parsing… ${(r.processed||0).toLocaleString()} messages`); }
-        else if(r.status==="queued"){ setSt("Queued for parsing…"); }
+        updateParseTracking(r.status, r.processed ?? null, r.total_messages ?? null);
+        if(r.status==="processing"){
+          const processed=r.processed||0;
+          const total=r.total_messages;
+          if(Number.isFinite(total) && total>0){
+            setSt(`Parsing… ${processed.toLocaleString()} / ${total.toLocaleString()} messages`);
+          }else{
+            setSt(`Parsing… ${processed.toLocaleString()} messages`);
+          }
+        }
+        else if(r.status==="queued"){
+          setSt("Queued for parsing…");
+        }
         else if(r.status==="done"){
           clearInterval(poll); poll=null;
           dl.href="/download/"+job; dl.download="emails.zip"; dl.style.display="inline";
           dl.click(); setSt("Done."); go.disabled=false; stopTimer(); renderEta(0);
         } else if(r.status==="error"){
-          clearInterval(poll); poll=null; setSt("Error: "+(r.error||"unknown")); go.disabled=false; stopTimer();
+          clearInterval(poll); poll=null; setSt("Error: "+(r.error||"unknown")); go.disabled=false; stopTimer(); renderEta(NaN);
         }
       }catch(err){
-        clearInterval(poll); poll=null; setSt("Error checking status."); go.disabled=false; stopTimer();
+        clearInterval(poll); poll=null; setSt("Error checking status."); go.disabled=false; stopTimer(); renderEta(NaN);
       }
     }, 1500);
   }catch(err){
@@ -789,12 +935,60 @@ def _normalize_options(options: Optional[Dict]) -> Dict[str, bool]:
     }
 
 
+def _coerce_header_value(value: Any) -> str:
+    if value is None:
+        return ""
+    if isinstance(value, str):
+        return value
+    for attr in ("value", "_value"):
+        attr_value = getattr(value, attr, None)
+        if isinstance(attr_value, str):
+            return attr_value
+    addresses = getattr(value, "addresses", None)
+    if addresses:
+        rendered = []
+        for addr in addresses:
+            addr_spec = getattr(addr, "addr_spec", "") or ""
+            display = getattr(addr, "display_name", "") or ""
+            if display and addr_spec:
+                rendered.append(f"{display} <{addr_spec}>")
+            elif addr_spec:
+                rendered.append(addr_spec)
+            else:
+                fallback = getattr(addr, "value", None)
+                if isinstance(fallback, str) and fallback:
+                    rendered.append(fallback)
+        if rendered:
+            return ", ".join(rendered)
+    encode = getattr(value, "encode", None)
+    if callable(encode):
+        try:
+            encoded = encode()
+            if isinstance(encoded, str):
+                return encoded
+        except Exception:
+            pass
+    try:
+        return str(value)
+    except Exception:
+        return ""
+
+
+def _header_value(msg, name: str) -> str:
+    try:
+        raw_value = msg.get(name)
+    except Exception:
+        return ""
+    return _coerce_header_value(raw_value)
+
+
 def _parse_job(jid: str) -> None:
     j = _load(jid)
     if not j:
         return
     j["status"] = "processing"
     j["processed"] = 0
+    j["total_messages"] = j.get("total_messages", 0)
     _save(j)
     src = Path(j["in_path"])
     out_zip = OUT / f"{jid}-emails.zip"
@@ -814,6 +1008,13 @@ def _parse_job(jid: str) -> None:
         full_parser = BytesParser(policy=policy.default)
         processed = 0
         try:
+            total_messages = len(m)
+        except Exception:
+            total_messages = 0
+        j["total_messages"] = total_messages
+        j["processed"] = 0
+        _save(j)
+        try:
             with zipfile.ZipFile(out_zip, "w", compression=zipfile.ZIP_DEFLATED) as zf:
                 with zf.open("emails.csv", "w") as emails_member:
                     with io.TextIOWrapper(emails_member, encoding="utf-8", newline="") as emails_txt:
@@ -826,6 +1027,7 @@ def _parse_job(jid: str) -> None:
                             attachments_txt = io.TextIOWrapper(attachments_member, encoding="utf-8", newline="")
                             attachments_writer = csv.writer(attachments_txt)
                             attachments_writer.writerow(attachments_fields)
+                        update_interval = max(1, total_messages // 200) if total_messages else 50000
                         try:
                             for idx, key in enumerate(m.iterkeys(), 1):
                                 with m.get_file(key) as msg_fp:
@@ -833,18 +1035,18 @@ def _parse_job(jid: str) -> None:
                                         msg = full_parser.parse(msg_fp)
                                     else:
                                         msg = header_parser.parse(msg_fp, headersonly=True)
-                                message_id = msg.get("Message-Id", "")
+                                message_id = _header_value(msg, "Message-Id")
                                 row = [
-                                    msg.get("Date", ""),
-                                    msg.get("From", ""),
-                                    msg.get("To", ""),
-                                    msg.get("Cc", ""),
-                                    msg.get("Bcc", ""),
-                                    msg.get("Subject", ""),
+                                    _header_value(msg, "Date"),
+                                    _header_value(msg, "From"),
+                                    _header_value(msg, "To"),
+                                    _header_value(msg, "Cc"),
+                                    _header_value(msg, "Bcc"),
+                                    _header_value(msg, "Subject"),
                                     message_id,
                                 ]
                                 if include_thread:
-                                    row.append(msg.get("X-GM-THRID", ""))
+                                    row.append(_header_value(msg, "X-GM-THRID"))
                                 if include_body:
                                     row.append(_extract_body_text(msg))
                                 writer.writerow(row)
@@ -852,7 +1054,7 @@ def _parse_job(jid: str) -> None:
                                     for attachment_row in _iter_attachment_rows(msg, message_id):
                                         attachments_writer.writerow(attachment_row)
                                 processed = idx
-                                if processed % 50000 == 0:
+                                if processed % update_interval == 0:
                                     j["processed"] = processed
                                     _save(j)
                         finally:
@@ -861,6 +1063,7 @@ def _parse_job(jid: str) -> None:
                                 attachments_txt.close()
             j["status"] = "done"
             j["processed"] = processed
+            j["total_messages"] = total_messages
             j["out_path"] = str(out_zip)
             _save(j)
         finally:
@@ -998,6 +1201,7 @@ async def upload_init(payload: UploadInit):
         "next_index": 0,
         "expected_chunks": max(1, math.ceil(payload.size / CHUNK)),
         "sha256": payload.sha256,
+        "total_messages": 0,
         "options": {
             "include_body": payload.include_body,
             "include_thread_id": payload.include_thread_id,
@@ -1079,6 +1283,7 @@ async def legacy_upload(file: UploadFile = File(...)):
         "size": total,
         "filename": file.filename or "upload.mbox",
         "in_path": str(dst),
+        "total_messages": 0,
         "options": {
             "include_body": False,
             "include_thread_id": False,
@@ -1101,6 +1306,7 @@ def status(jid: str):
             "processed": j.get("processed"),
             "received": j.get("received"),
             "size": j.get("size"),
+            "total_messages": j.get("total_messages"),
             "error": j.get("error"),
         }
     )
