@@ -944,7 +944,12 @@ def _coerce_header_value(value: Any) -> str:
         attr_value = getattr(value, attr, None)
         if isinstance(attr_value, str):
             return attr_value
-    addresses = getattr(value, "addresses", None)
+    addresses = None
+    if hasattr(value, "addresses"):
+        try:
+            addresses = value.addresses
+        except Exception:
+            addresses = None
     if addresses:
         rendered = []
         for addr in addresses:
