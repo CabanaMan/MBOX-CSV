@@ -1142,6 +1142,16 @@ def contact_head():
     return Response(status_code=200)
 
 
+@app.get("/support", response_class=HTMLResponse)
+def support():
+    return read_page("support.html")
+
+
+@app.head("/support")
+def support_head():
+    return Response(status_code=200)
+
+
 @app.get("/robots.txt")
 def robots():
     txt = (PAGES / "robots.txt").read_text(encoding="utf-8")
