@@ -939,9 +939,14 @@ def contact_head():
     return Response(status_code=200)
 
 
-@app.get("/robots.txt", response_class=PlainTextResponse)
-def robots_txt():
-    return read_static("robots.txt")
+@app.get("/robots.txt")
+def robots():
+    txt = (PAGES / "robots.txt").read_text(encoding="utf-8")
+    return Response(
+        txt,
+        media_type="text/plain; charset=utf-8",
+        headers={"Cache-Control": "no-store"},
+    )
 
 
 @app.head("/robots.txt")
@@ -950,8 +955,13 @@ def robots_head():
 
 
 @app.get("/sitemap.xml")
-def sitemap_xml():
-    return Response(read_static("sitemap.xml"), media_type="application/xml")
+def sitemap():
+    xml = (PAGES / "sitemap.xml").read_text(encoding="utf-8")
+    return Response(
+        xml,
+        media_type="application/xml; charset=utf-8",
+        headers={"Cache-Control": "no-store"},
+    )
 
 
 @app.head("/sitemap.xml")
