@@ -112,7 +112,7 @@ HTML = """<!doctype html><html lang=\"en\"><head>
           \"name\": \"What data is included in the CSV export?\",
           \"acceptedAnswer\": {
             \"@type\": \"Answer\",
-            \"text\": \"Each row in emails.csv contains the message date, sender, recipients, subject, and the Message-ID header. Optional toggles add Gmail thread IDs, body text, and an attachments manifest.\"
+            \"text\": \"Each row in emails.csv contains the message date, sender, recipients, subject, the Message-ID header, and the plain-text body trimmed to 32K characters.\"
           }
         },
         {
@@ -159,10 +159,6 @@ body{margin:0;background:
 .btn-primary{background:linear-gradient(90deg,#7c5cff,#5b85ff);color:#0b0f1e}
 .btn-ghost{background:#111a2e;color:#d8ddf5;border:1px solid #1f2a44}
 .btn[disabled]{opacity:.6;cursor:not-allowed}
-.options{margin-top:22px;border:1px solid #162037;border-radius:14px;padding:16px;display:flex;flex-wrap:wrap;gap:12px}
-.options legend{padding:0 6px;color:#9ecbff;font-size:14px;font-weight:600}
-.option{display:flex;align-items:center;gap:8px;font-size:14px;color:#cdd6e3}
-.option input{width:18px;height:18px}
 .progress{display:flex;align-items:center;gap:12px;margin-top:18px}
 .bar{flex:1;height:12px;border-radius:999px;background:#0b1b2f;border:1px solid var(--ring2);overflow:hidden}
 .fill{height:100%;width:0;background:linear-gradient(90deg,#22c55e,#7c5cff)}
@@ -171,6 +167,7 @@ body{margin:0;background:
 .pct .elapsed{opacity:.8}
 .status{min-height:24px;margin-top:10px;color:#cdd6e3}
 .note{margin-top:16px;color:var(--muted);font-size:14px}
+.note-body{margin:18px 0 0;color:var(--muted);font-size:14px}
 .main{flex:1;display:flex;flex-direction:column;gap:36px;padding-bottom:20px}
 .seo-section{background:rgba(10,16,34,.65);border:1px solid #111c32;border-radius:18px;padding:28px}
 .seo-section h2{margin-top:0;font-size:22px}
@@ -267,12 +264,7 @@ kbd{background:#111a2e;padding:2px 6px;border-radius:6px;border:1px solid #1e293
           <a id=\"dl\" class=\"dl\">Download ZIP</a>
         </div>
 
-        <fieldset class=\"options\">
-          <legend>Optional fields</legend>
-          <label class=\"option\"><input id=\"opt-thread\" type=\"checkbox\">Include Gmail thread IDs</label>
-          <label class=\"option\"><input id=\"opt-body\" type=\"checkbox\">Include message body text (plain text)</label>
-          <label class=\"option\"><input id=\"opt-attachments\" type=\"checkbox\">Generate attachments.csv manifest</label>
-        </fieldset>
+        <p class=\"note-body\">Plain-text body content is included automatically (trimmed to 32K characters) so you can scan conversations without opening each email.</p>
 
         <div class=\"progress\" aria-label=\"Progress\">
           <div class=\"bar\"><div id=\"fill\" class=\"fill\"></div></div>
@@ -288,27 +280,26 @@ kbd{background:#111a2e;padding:2px 6px;border-radius:6px;border:1px solid #1e293
         <ul class=\"list-check\">
           <li>Handles archives up to 20 GB with resumable, checksum-verified uploads.</li>
           <li>Server-side parsing keeps the heavy lifting off your device while protecting your data.</li>
-          <li>Optional toggles let you include Gmail thread IDs, message bodies, and an attachments manifest.</li>
+          <li>Plain-text body content is included automatically (trimmed to 32K characters) for quick reviews.</li>
           <li>Privacy-first processing — temporary files are automatically deleted after each job finishes.</li>
         </ul>
       </section>
 
       <section class=\"seo-section\" id=\"preview\">
         <h2>See the CSV layout</h2>
-        <p>The export arrives as <code>emails.csv</code> inside <code>emails.zip</code>. Here is a preview of the default columns with body text enabled:</p>
+        <p>The export arrives as <code>emails.csv</code> inside <code>emails.zip</code> and includes the columns shown below. Plain-text bodies are trimmed to 32K characters automatically.</p>
         <figure class=\"csv-preview\">
           <table>
             <thead>
-              <tr><th>date</th><th>from</th><th>to</th><th>subject</th><th>message_id</th><th>thread_id</th><th>body</th></tr>
+              <tr><th>date</th><th>from</th><th>to</th><th>cc</th><th>bcc</th><th>subject</th><th>message_id</th><th>body</th></tr>
             </thead>
             <tbody>
-              <tr><td>Tue, 12 Mar 2024 09:24:10 -0500</td><td>alice@example.com</td><td>team@example.com</td><td>Kickoff notes</td><td>&lt;abc123@example.com&gt;</td><td>1782346987123</td><td>Thanks for joining the kickoff! Attached are the next steps.</td></tr>
-              <tr><td>Tue, 12 Mar 2024 09:31:44 -0500</td><td>bob@example.com</td><td>alice@example.com</td><td>Re: Kickoff notes</td><td>&lt;def456@example.com&gt;</td><td>1782346987123</td><td>Appreciate the summary. I will update the brief.</td></tr>
-              <tr><td>Wed, 13 Mar 2024 07:02:05 -0500</td><td>carol@example.com</td><td>team@example.com</td><td>Status update</td><td>&lt;ghi789@example.com&gt;</td><td>2789346123400</td><td>Morning! Today’s deployment is on track. CSV export scheduled for 2 PM.</td></tr>
+              <tr><td>Tue, 12 Mar 2024 09:24:10 -0500</td><td>alice@example.com</td><td>team@example.com</td><td>&mdash;</td><td>&mdash;</td><td>Kickoff notes</td><td>&lt;abc123@example.com&gt;</td><td>Thanks for joining the kickoff! Attached are the next steps.</td></tr>
+              <tr><td>Tue, 12 Mar 2024 09:31:44 -0500</td><td>bob@example.com</td><td>alice@example.com</td><td>&mdash;</td><td>&mdash;</td><td>Re: Kickoff notes</td><td>&lt;def456@example.com&gt;</td><td>Appreciate the summary. I will update the brief.</td></tr>
+              <tr><td>Wed, 13 Mar 2024 07:02:05 -0500</td><td>carol@example.com</td><td>team@example.com</td><td>support@example.com</td><td>&mdash;</td><td>Status update</td><td>&lt;ghi789@example.com&gt;</td><td>Morning! Today’s deployment is on track. CSV export scheduled for 2 PM.</td></tr>
             </tbody>
           </table>
         </figure>
-        <p>When attachments are enabled an additional <code>attachments.csv</code> lists filename, content type, and size for every part.</p>
       </section>
 
       <section class=\"seo-section\" id=\"how-it-works\">
@@ -497,8 +488,8 @@ kbd{background:#111a2e;padding:2px 6px;border-radius:6px;border:1px solid #1e293
             <p>PST support is available through our concierge service. Convert the PST to MBOX with a desktop tool or <a href=\"/contact\">email support</a> and we will handle it for you.</p>
           </details>
           <details>
-            <summary>What extras do the toggles add?</summary>
-            <p><strong>Thread IDs</strong> add Gmail’s <code>X-GM-THRID</code> value, <strong>message body</strong> adds the plain-text portion (trimmed to 32K characters), and <strong>attachments.csv</strong> lists filenames, content types, and approximate sizes.</p>
+            <summary>Which columns are included in the CSV?</summary>
+            <p>Every row contains the message date, from, to, cc, bcc, subject, Message-ID, and the plain-text body (trimmed to 32K characters). Attachments metadata is not generated by default.</p>
             <p style=\"margin-top:10px\"><img src=\"/static/csv-preview.svg\" alt=\"Screenshot of the CSV output\" style=\"max-width:100%;border:1px solid #1f2a3d;border-radius:12px\"></p>
           </details>
           <details>
@@ -519,7 +510,7 @@ kbd{background:#111a2e;padding:2px 6px;border-radius:6px;border:1px solid #1e293
 </div>
 <script>
 const $=s=>document.querySelector(s);
-const drop=$("#drop"), file=$("#file"), browse=$("#browse"), go=$("#go"), fill=$("#fill"), pct=$("#pct"), eta=$("#eta"), elapsed=$("#elapsed"), st=$("#status"), dl=$("#dl"), optThread=$("#opt-thread"), optBody=$("#opt-body"), optAttachments=$("#opt-attachments");
+const drop=$("#drop"), file=$("#file"), browse=$("#browse"), go=$("#go"), fill=$("#fill"), pct=$("#pct"), eta=$("#eta"), elapsed=$("#elapsed"), st=$("#status"), dl=$("#dl");
 const DEFAULT_UPLOAD_WEIGHT=0.6;
 const DEFAULT_PARSE_FALLBACK_SECONDS=45;
 const progressState={
@@ -783,9 +774,9 @@ go.addEventListener("click",async()=>{
     const initPayload = {
       filename: selected.name,
       size: selected.size,
-      include_body: optBody.checked,
-      include_thread_id: optThread.checked,
-      include_attachments: optAttachments.checked
+      include_body: true,
+      include_thread_id: false,
+      include_attachments: false
     };
     const initRes = await fetch("/upload/init", {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(initPayload)});
     if(!initRes.ok){
@@ -839,7 +830,7 @@ class UploadInit(BaseModel):
     filename: str
     size: int
     sha256: Optional[str] = None
-    include_body: bool = False
+    include_body: bool = True
     include_thread_id: bool = False
     include_attachments: bool = False
 
@@ -928,10 +919,13 @@ def _iter_attachment_rows(message, message_id: str):
 
 def _normalize_options(options: Optional[Dict]) -> Dict[str, bool]:
     options = options or {}
+    include_body = options.get("include_body")
+    include_thread = options.get("include_thread_id")
+    include_attachments = options.get("include_attachments")
     return {
-        "include_body": bool(options.get("include_body")),
-        "include_thread_id": bool(options.get("include_thread_id")),
-        "include_attachments": bool(options.get("include_attachments")),
+        "include_body": True if include_body is None else bool(include_body),
+        "include_thread_id": bool(include_thread),
+        "include_attachments": bool(include_attachments),
     }
 
 
@@ -1300,7 +1294,7 @@ async def legacy_upload(file: UploadFile = File(...)):
         "in_path": str(dst),
         "total_messages": 0,
         "options": {
-            "include_body": False,
+            "include_body": True,
             "include_thread_id": False,
             "include_attachments": False,
         },
