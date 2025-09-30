@@ -1,48 +1,53 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="800" height="360" viewBox="0 0 800 360">
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="360" viewBox="0 0 880 360">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0%" stop-color="#101830"/>
       <stop offset="100%" stop-color="#0b1224"/>
     </linearGradient>
   </defs>
-  <rect width="800" height="360" fill="url(#bg)" rx="20"/>
+  <rect width="880" height="360" fill="url(#bg)" rx="20"/>
   <text x="40" y="60" fill="#9ecbff" font-family="Inter,Arial" font-size="26" font-weight="600">emails.csv preview</text>
   <g transform="translate(40 90)">
-    <rect width="720" height="220" fill="#0f172a" stroke="#1f2a44" stroke-width="2" rx="12"/>
+    <rect width="800" height="220" fill="#0f172a" stroke="#1f2a44" stroke-width="2" rx="12"/>
     <g fill="#9ecbff" font-family="Inter,Arial" font-size="14" font-weight="600" text-anchor="start">
       <text x="20" y="32">date</text>
-      <text x="140" y="32">from</text>
-      <text x="260" y="32">to</text>
-      <text x="380" y="32">subject</text>
-      <text x="520" y="32">message_id</text>
-      <text x="640" y="32">thread_id</text>
+      <text x="150" y="32">from</text>
+      <text x="280" y="32">to</text>
+      <text x="360" y="32">cc</text>
+      <text x="430" y="32">bcc</text>
+      <text x="510" y="32">subject</text>
+      <text x="640" y="32">message_id</text>
+      <text x="760" y="32">body</text>
     </g>
-    <line x1="20" y1="42" x2="700" y2="42" stroke="#1f2a44" stroke-width="1"/>
+    <line x1="20" y1="42" x2="780" y2="42" stroke="#1f2a44" stroke-width="1"/>
     <g fill="#d4d9e4" font-family="Inter,Arial" font-size="13">
       <text x="20" y="70">Tue, 12 Mar 2024 09:24</text>
-      <text x="140" y="70">alice@example.com</text>
-      <text x="260" y="70">team@example.com</text>
-      <text x="380" y="70">Kickoff notes</text>
-      <text x="520" y="70">&lt;abc123@example.com&gt;</text>
-      <text x="640" y="70">1782346987123</text>
+      <text x="150" y="70">alice@example.com</text>
+      <text x="280" y="70">team@example.com</text>
+      <text x="360" y="70">—</text>
+      <text x="430" y="70">—</text>
+      <text x="510" y="70">Kickoff notes</text>
+      <text x="640" y="70">&lt;abc123@example.com&gt;</text>
+      <text x="760" y="70">Thanks for joining!</text>
 
       <text x="20" y="110">Tue, 12 Mar 2024 09:31</text>
-      <text x="140" y="110">bob@example.com</text>
-      <text x="260" y="110">alice@example.com</text>
-      <text x="380" y="110">Re: Kickoff notes</text>
-      <text x="520" y="110">&lt;def456@example.com&gt;</text>
-      <text x="640" y="110">1782346987123</text>
+      <text x="150" y="110">bob@example.com</text>
+      <text x="280" y="110">alice@example.com</text>
+      <text x="360" y="110">—</text>
+      <text x="430" y="110">—</text>
+      <text x="510" y="110">Re: Kickoff notes</text>
+      <text x="640" y="110">&lt;def456@example.com&gt;</text>
+      <text x="760" y="110">Appreciate the summary.</text>
 
       <text x="20" y="150">Wed, 13 Mar 2024 07:02</text>
-      <text x="140" y="150">carol@example.com</text>
-      <text x="260" y="150">team@example.com</text>
-      <text x="380" y="150">Status update</text>
-      <text x="520" y="150">&lt;ghi789@example.com&gt;</text>
-      <text x="640" y="150">2789346123400</text>
+      <text x="150" y="150">carol@example.com</text>
+      <text x="280" y="150">team@example.com</text>
+      <text x="360" y="150">support@example.com</text>
+      <text x="430" y="150">—</text>
+      <text x="510" y="150">Status update</text>
+      <text x="640" y="150">&lt;ghi789@example.com&gt;</text>
+      <text x="760" y="150">Deployment on track.</text>
     </g>
-    <rect x="20" y="170" width="660" height="60" fill="#101a33" stroke="#1f2a44" stroke-width="1" rx="10"/>
-    <text x="40" y="200" fill="#9ecbff" font-family="Inter,Arial" font-size="13" font-weight="600">attachments.csv</text>
-    <text x="40" y="224" fill="#cdd6e3" font-family="Inter,Arial" font-size="12">message_id,filename,content_type,size_bytes</text>
   </g>
   <text x="40" y="330" fill="#7c8799" font-family="Inter,Arial" font-size="12">mbox-csv.com • secure, resumable MBOX to CSV conversion</text>
 </svg>
