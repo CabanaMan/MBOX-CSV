@@ -79,6 +79,7 @@ HTML = """<!doctype html><html lang=\"en\"><head>
 <meta name=\"twitter:description\" content=\"Convert large MBOX archives to CSV spreadsheets with server-side parsing.\">
 <link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>
 <link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap\" rel=\"stylesheet\">
+<script async src=\"https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8714478254404273\" crossorigin=\"anonymous\"></script>
 <script type=\"application/ld+json\">
 {
   \"@context\": \"https://schema.org\",
@@ -241,7 +242,6 @@ kbd{background:#111a2e;padding:2px 6px;border-radius:6px;border:1px solid #1e293
   </header>
 
   <div class=\"ad-wrapper\" aria-label=\"Top advertisement slot\">
-    <script async src=\"https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8714478254404273\" crossorigin=\"anonymous\"></script>
     <p>Advertisements are served via Google AdSense.</p>
   </div>
 
@@ -502,7 +502,6 @@ kbd{background:#111a2e;padding:2px 6px;border-radius:6px;border:1px solid #1e293
   </main>
 
   <div class=\"ad-wrapper\" aria-label=\"Bottom advertisement slot\">
-    <script async src=\"https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8714478254404273\" crossorigin=\"anonymous\"></script>
     <p>Advertisements are served via Google AdSense.</p>
   </div>
 
