@@ -190,7 +190,8 @@
     .faq details{background:#0b1224;border:1px solid #132035;border-radius:16px;margin-top:12px;padding:18px}
     .faq summary{font-weight:600;cursor:pointer;color:#e6e9ef}
     .faq p{margin:12px 0 0;color:#cdd6e3}
-    .ad-wrapper{margin:16px auto;width:100%;max-width:1080px;padding:0 24px;text-align:center;color:var(--muted);font-size:12px}
+    .ad-wrapper{margin:16px auto;width:100%;max-width:1080px;padding:0 24px;text-align:center;color:var(--muted);font-size:12px;display:flex;flex-direction:column;align-items:center;gap:8px}
+    .ad-label{font-weight:600;letter-spacing:.08em;text-transform:uppercase;font-size:11px;color:#9aa4b2}
     .footer{margin:32px auto 28px;color:#7c8799;font-size:12px;text-align:center;padding:0 24px}
     kbd{background:#111a2e;padding:2px 6px;border-radius:6px;border:1px solid #1e293b}
     @media (max-width:720px){
@@ -247,7 +248,16 @@
     </header>
 
     <div class="ad-wrapper" aria-label="Top advertisement slot">
-      <p>Advertisements are served via Google AdSense.</p>
+      <span class="ad-label">Advertisement</span>
+      <ins class="adsbygoogle"
+           style="display:block"
+           data-ad-client="ca-pub-8714478254404273"
+           data-ad-slot="6039707112"
+           data-ad-format="auto"
+           data-full-width-responsive="true"></ins>
+      <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
     </div>
 
     <main class="main">
